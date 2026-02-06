@@ -54,5 +54,14 @@
         <!-- Copy the content from system-preferences.html file -->
     </div>
 </div>
+<script>
+// Temporary test - click anywhere to open System Preferences
+document.addEventListener('click', function(e) {
+    if (window.SystemPreferences && !window.SystemPreferences.isOpen) {
+        window.SystemPreferences.open();
+        console.log("System Preferences opened via click test!");
+    }
+});
+</script>
 </body>
 </html>
