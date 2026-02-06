@@ -123,6 +123,21 @@
     
     <!-- LOAD YOUR ACTUAL FILES -->
     <script src="system-preferences.js"></script>
+<!-- TEMPORARY DEBUG BUTTON - REMOVE LATER -->
+<button style="
+    position: fixed; 
+    top: 10px; 
+    right: 10px; 
+    z-index: 99999;
+    padding: 10px 15px;
+    background: #007AFF;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+" onclick="if(window.SystemPreferences) window.SystemPreferences.open()">
+    🔧 TEST OPEN
+</button>
     
 </body>
 </html>
