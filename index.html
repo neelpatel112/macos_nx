@@ -3,65 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>macOS Web Emulator</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>DEBUG - macOS Emulator</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #1a1a1a; 
+            color: white;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .debug-header {
+            background: #007AFF;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .test-buttons {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .test-btn {
+            padding: 15px 30px;
+            background: #333;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .test-btn:hover {
+            background: #444;
+        }
+        
+        .test-btn.open { background: #34C759; }
+        .test-btn.open:hover { background: #2DAF4F; }
+        
+        .test-btn.close { background: #FF3B30; }
+        .test-btn.close:hover { background: #E0352B; }
+        
+        .status {
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
 </head>
 <body>
-    <!-- Desktop Background -->
-    <div class="desktop">
-        <div class="icon" style="top: 100px; left: 100px;">
-            <img src="icons/finder.png" class="desktop-icon">
-            <span>Finder</span>
-        </div>
-        <div class="icon" style="top: 100px; left: 220px;">
-            <img src="icons/safari.png" class="desktop-icon">
-            <span>Safari</span>
-        </div>
+    <div class="debug-header">
+        <h1>🔧 macOS Emulator - Debug Mode</h1>
+        <p>Testing System Preferences App</p>
     </div>
-
-    <!-- Menu Bar -->
-    <div class="menu-bar">
-        <div class="apple-menu">
-            <i class="fab fa-apple"></i>
-        </div>
-        <div class="menu-item">Finder</div>
-        <div class="menu-item">File</div>
-        <div class="menu-item">Edit</div>
-        <div class="menu-item">View</div>
-        <div class="menu-item">Window</div>
-        <div class="menu-item">Help</div>
-        <div class="status-area">
-            <span id="time">10:00 AM</span>
-        </div>
+    
+    <div class="test-buttons">
+        <button class="test-btn open" onclick="openApp()">🚀 OPEN System Preferences</button>
+        <button class="test-btn close" onclick="closeApp()">❌ CLOSE System Preferences</button>
+        <button class="test-btn" onclick="checkStatus()">🔍 CHECK Status</button>
     </div>
-
-    <!-- Dock -->
-    <div class="dock-container" id="dockContainer"></div>
-
-    <!-- Scripts -->
-    <script src="dock.js"></script>
-    <script src="script.js"></script>
-<!-- Add these lines before </body> -->
-<link rel="stylesheet" href="system-preferences.css">
-<script src="windows.js"></script>
-<script src="system-preferences.js"></script>
-
-<!-- Window Templates (hidden) -->
-<div style="display: none;">
-    <div class="system-preferences-window" id="systemPrefsTemplate">
-        <!-- The entire system-preferences.html content goes here -->
-        <!-- Copy the content from system-preferences.html file -->
+    
+    <div class="status" id="statusOutput">
+        Status will appear here...
     </div>
-</div>
-<script>
-// Temporary test - click anywhere to open System Preferences
-document.addEventListener('click', function(e) {
-    if (window.SystemPreferences && !window.SystemPreferences.isOpen) {
-        window.SystemPreferences.open();
-        console.log("System Preferences opened via click test!");
-    }
-});
-</script>
+    
+    <!-- Load scripts IN ORDER -->
+    <script>
+        function logStatus(msg) {
+            const status = document.getElementById('statusOutput');
+            status.innerHTML += msg + '\n';
+            status.scrollTop = status.scrollHeight;
+        }
+        
+        function openApp() {
+            logStatus('--- OPENING ---');
+            if (window.SystemPreferences) {
+                logStatus('✅ SystemPreferences found');
+                window.SystemPreferences.open();
+                logStatus('✅ open() method called');
+            } else {
+                logStatus('❌ ERROR: SystemPreferences not found!');
+                logStatus('window.SystemPreferences = ' + window.SystemPreferences);
+            }
+        }
+        
+        function closeApp() {
+            logStatus('--- CLOSING ---');
+            if (window.SystemPreferences && window.SystemPreferences.close) {
+                window.SystemPreferences.close();
+                logStatus('✅ close() method called');
+            }
+        }
+        
+        function checkStatus() {
+            logStatus('--- STATUS CHECK ---');
+            logStatus('window.SystemPreferences: ' + (window.SystemPreferences ? '✅ EXISTS' : '❌ MISSING'));
+            if (window.SystemPreferences) {
+                logStatus('isOpen: ' + window.SystemPreferences.isOpen);
+                logStatus('window element: ' + (window.SystemPreferences.window ? '✅ EXISTS' : '❌ MISSING'));
+            }
+        }
+        
+        logStatus('Page loaded. Ready for testing...');
+    </script>
+    
+    <!-- LOAD YOUR ACTUAL FILES -->
+    <script src="system-preferences.js"></script>
+    
 </body>
 </html>
