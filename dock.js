@@ -159,28 +159,36 @@ class MacOSDock {
     }
     
     launchApp(appId) {
-        console.log(`Launching: ${appId}`);
-        
-        // System Preferences
-        if (appId === 'system') {
-            if (window.SystemPreferences) {
-                if (!window.SystemPreferences.isOpen) {
-                    window.SystemPreferences.open();
-                } else {
-                    window.SystemPreferences.bringToFront();
-                }
+    console.log("Launching:", appId);
+    
+    // System Preferences
+    if (appId === 'system') {
+        console.log("Opening System Preferences...");
+        if (window.SystemPreferences) {
+            if (!window.SystemPreferences.isOpen) {
+                window.SystemPreferences.open();
+            } else {
+                window.SystemPreferences.bringToFront();
             }
-        }
-        
-        // Visual feedback
-        const button = this.dockEl.querySelector(`[data-app="${appId}"]`);
-        if (button) {
-            const img = button.querySelector('img');
-            img.style.transform = 'scale(0.9)';
+        } else {
+            console.error("SystemPreferences not found!");
+            // Try to initialize it
             setTimeout(() => {
-                img.style.transform = 'scale(1)';
+                if (window.SystemPreferences) {
+                    window.SystemPreferences.open();
+                }
             }, 100);
         }
+    }
+    
+    // Visual feedback
+    const button = this.dockEl.querySelector(`[data-app="${appId}"]`);
+    if (button) {
+        const img = button.querySelector('img');
+        img.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+            img.style.transform = 'scale(1)';
+        }, 100);
     }
 }
 
