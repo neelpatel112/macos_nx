@@ -194,3 +194,15 @@ body {
 .window-close:hover { background-color: #e0443e !important; }
 .window-minimize:hover { background-color: #e0a91a !important; }
 .window-zoom:hover { background-color: #1cb82a !important; } 
+/* Add to your existing style.css file */
+:root {
+    --accent-color: #007AFF;
+    --bg-color: #ffffff;
+    --text-color: #000000;
+}
+
+/* Selection color */
+::selection {
+    background-color: var(--accent-color);
+    color: white;
+}

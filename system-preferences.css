@@ -1,11 +1,8 @@
-/* Save this as system-preferences.css */
-/* WINDOW STYLES */
+/* system-preferences.css - COMPLETE STYLING */
+
+/* Window Styles */
 .window {
     position: absolute;
-    top: 100px;
-    left: 100px;
-    width: 900px;
-    height: 600px;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(30px);
     -webkit-backdrop-filter: blur(30px);
@@ -17,7 +14,6 @@
     flex-direction: column;
     overflow: hidden;
     z-index: 100;
-    animation: windowAppear 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.3);
 }
 
 @keyframes windowAppear {
@@ -31,10 +27,6 @@
     }
 }
 
-.window.active {
-    display: flex;
-}
-
 .window-titlebar {
     height: 40px;
     background: rgba(255, 255, 255, 0.8);
@@ -42,7 +34,7 @@
     display: flex;
     align-items: center;
     padding: 0 15px;
-    -webkit-app-region: drag;
+    -webkit-user-select: none;
     user-select: none;
 }
 
@@ -59,21 +51,12 @@
     border: none;
     transition: all 0.2s ease;
     position: relative;
-    -webkit-app-region: no-drag;
     cursor: pointer;
 }
 
-.window-close {
-    background-color: #ff5f57;
-}
-
-.window-minimize {
-    background-color: #ffbd2e;
-}
-
-.window-zoom {
-    background-color: #28ca42;
-}
+.window-close { background-color: #ff5f57; }
+.window-minimize { background-color: #ffbd2e; }
+.window-zoom { background-color: #28ca42; }
 
 .window-close:hover { background-color: #e0443e; }
 .window-minimize:hover { background-color: #e0a91a; }
@@ -103,12 +86,13 @@
     color: #666;
 }
 
-/* SYSTEM PREFERENCES STYLES */
+/* System Preferences Container */
 .system-preferences-container {
     display: flex;
     height: 100%;
 }
 
+/* Sidebar */
 .prefs-sidebar {
     width: 220px;
     background: rgba(248, 248, 248, 0.8);
@@ -136,11 +120,12 @@
     border-radius: 6px;
     background: white;
     font-size: 13px;
+    transition: all 0.2s;
 }
 
 .prefs-search input:focus {
     outline: none;
-    border-color: #007AFF;
+    border-color: var(--accent-color, #007AFF);
     box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
 }
 
@@ -168,7 +153,7 @@
 
 .prefs-category.active {
     background: rgba(0, 122, 255, 0.1);
-    color: #007AFF;
+    color: var(--accent-color, #007AFF);
     font-weight: 500;
 }
 
@@ -179,6 +164,7 @@
     text-align: center;
 }
 
+/* Main Content */
 .prefs-content {
     flex: 1;
     padding: 30px;
@@ -204,6 +190,14 @@
     font-size: 24px;
     font-weight: 600;
     color: #000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.prefs-pane h2 i {
+    font-size: 20px;
+    color: var(--accent-color, #007AFF);
 }
 
 .prefs-section {
@@ -219,36 +213,29 @@
 
 .prefs-option {
     margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
 }
 
 .prefs-option label {
     margin-bottom: 8px;
     font-size: 13px;
     color: #333;
-    display: flex;
-    align-items: center;
-}
-
-.prefs-option input[type="checkbox"] {
-    margin-right: 8px;
-    width: 16px;
-    height: 16px;
+    display: block;
 }
 
 .help-text {
     font-size: 12px;
     color: #666;
     margin-top: 4px;
+    line-height: 1.4;
 }
 
-/* SEGMENTED CONTROL */
+/* Segmented Control */
 .segmented-control {
     display: inline-flex;
     background: rgba(0, 0, 0, 0.05);
     border-radius: 6px;
     padding: 3px;
+    gap: 2px;
 }
 
 .segmented-btn {
@@ -259,18 +246,22 @@
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s;
+    min-width: 60px;
 }
 
 .segmented-btn.active {
     background: white;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    color: var(--accent-color, #007AFF);
+    font-weight: 500;
 }
 
-/* COLOR PICKER */
+/* Color Picker */
 .color-picker {
     display: flex;
     gap: 10px;
     margin-top: 5px;
+    flex-wrap: wrap;
 }
 
 .color-option {
@@ -288,20 +279,21 @@
 
 .color-option.active {
     border-color: #000;
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 0 2px white, 0 0 0 4px var(--accent-color, #007AFF);
 }
 
-/* SLIDERS */
+/* Sliders */
 .slider-container {
     display: flex;
     align-items: center;
     gap: 15px;
-    margin-top: 5px;
+    margin: 10px 0;
 }
 
 .slider-container i {
     color: #666;
     font-size: 14px;
+    min-width: 20px;
 }
 
 .slider-container i.bright {
@@ -315,6 +307,7 @@
     background: #ddd;
     border-radius: 2px;
     outline: none;
+    transition: background 0.2s;
 }
 
 .prefs-slider::-webkit-slider-thumb,
@@ -323,46 +316,33 @@
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #007AFF;
+    background: var(--accent-color, #007AFF);
     cursor: pointer;
     border: 2px solid white;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
 }
 
-/* VOLUME CONTROL */
+.prefs-slider:focus, .volume-slider:focus {
+    background: #ccc;
+}
+
+.slider-value, .volume-value {
+    font-size: 12px;
+    color: #666;
+    min-width: 50px;
+    text-align: right;
+}
+
+/* Volume Control */
 .volume-control {
     display: flex;
     align-items: center;
     gap: 15px;
-    margin-top: 10px;
+    margin: 15px 0;
 }
 
-.volume-value {
-    font-size: 12px;
-    color: #666;
-    min-width: 40px;
-}
-
-/* NETWORK STATUS */
-.network-status {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.status-indicator {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-}
-
-.status-indicator.online {
-    background: #34C759;
-    box-shadow: 0 0 0 2px rgba(52, 199, 89, 0.2);
-}
-
-/* INPUTS AND SELECTS */
+/* Select and Input */
 .prefs-select, .prefs-input {
     width: 100%;
     max-width: 300px;
@@ -371,20 +351,30 @@
     border-radius: 6px;
     font-size: 13px;
     background: white;
+    transition: all 0.2s;
 }
 
 .prefs-select:focus, .prefs-input:focus {
     outline: none;
-    border-color: #007AFF;
+    border-color: var(--accent-color, #007AFF);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
 }
 
-/* ACTION BUTTON */
+/* Checkboxes */
+input[type="checkbox"] {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+/* Action Button */
 .prefs-action-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
     padding: 10px 20px;
-    background: #007AFF;
+    background: var(--accent-color, #007AFF);
     color: white;
     border: none;
     border-radius: 6px;
@@ -395,13 +385,109 @@
 }
 
 .prefs-action-btn:hover {
-    background: #0056CC;
+    filter: brightness(0.9);
+    transform: translateY(-1px);
 }
 
-/* RESPONSIVE */
+.prefs-action-btn:active {
+    transform: translateY(0);
+}
+
+/* Wallpaper Styles */
+.wallpaper-preview {
+    width: 100%;
+    max-width: 400px;
+    height: 200px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+}
+
+.wallpaper-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.wallpaper-options {
+    display: flex;
+    gap: 15px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+.wallpaper-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: transparent;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 100px;
+}
+
+.wallpaper-btn:hover {
+    border-color: var(--accent-color, #007AFF);
+    transform: translateY(-2px);
+}
+
+.wallpaper-btn img {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.wallpaper-btn span {
+    font-size: 12px;
+    color: #333;
+}
+
+/* Responsive */
 @media (max-width: 1000px) {
     .window {
-        width: 90vw;
-        height: 80vh;
+        width: 90vw !important;
+        height: 80vh !important;
     }
-} 
+    
+    .system-preferences-container {
+        flex-direction: column;
+    }
+    
+    .prefs-sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .prefs-categories {
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 0 10px;
+    }
+    
+    .prefs-category {
+        flex-direction: column;
+        padding: 10px;
+        text-align: center;
+        min-width: 80px;
+    }
+    
+    .prefs-category i {
+        margin-right: 0;
+        margin-bottom: 5px;
+    }
+}
+
+/* CSS Variables for theming */
+:root {
+    --accent-color: #007AFF;
+    --bg-color: #ffffff;
+    --text-color: #000000;
+}
