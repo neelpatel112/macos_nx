@@ -37,14 +37,34 @@ function initSystem() {
     
     initDesktopIcons();
     
+    // Initialize Window Manager
+    if (window.WindowManager) {
+        console.log('Window Manager loaded');
+    }
+    
+    // Initialize System Preferences
+    if (window.SystemPreferences) {
+        console.log('System Preferences loaded');
+    }
+    
+    // Global shortcut for System Preferences
     document.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'l') {
+        // Cmd/Ctrl + Space for Spotlight (placeholder)
+        if ((e.ctrlKey || e.metaKey) && e.key === ' ') {
             e.preventDefault();
-            console.log('Lock screen activated');
+            console.log('Spotlight search activated');
+        }
+        
+        // Cmd/Ctrl + , for System Preferences
+        if ((e.ctrlKey || e.metaKey) && e.key === ',') {
+            e.preventDefault();
+            if (window.SystemPreferences && !window.SystemPreferences.isOpen) {
+                window.SystemPreferences.open();
+            }
         }
     });
     
-    console.log('macOS Web Emulator initialized');
+    console.log('macOS Web Emulator fully initialized');
 }
 
 document.addEventListener('DOMContentLoaded', initSystem);

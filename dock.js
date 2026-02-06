@@ -160,6 +160,19 @@ class MacOSDock {
     
     launchApp(appId) {
         console.log(`Launching: ${appId}`);
+        
+        // System Preferences
+        if (appId === 'system') {
+            if (window.SystemPreferences) {
+                if (!window.SystemPreferences.isOpen) {
+                    window.SystemPreferences.open();
+                } else {
+                    window.SystemPreferences.bringToFront();
+                }
+            }
+        }
+        
+        // Visual feedback
         const button = this.dockEl.querySelector(`[data-app="${appId}"]`);
         if (button) {
             const img = button.querySelector('img');
@@ -171,6 +184,7 @@ class MacOSDock {
     }
 }
 
+// Initialize dock when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.macOSDock = new MacOSDock('dockContainer');
 });
