@@ -29,8 +29,8 @@ class MacOSDock {
         const apps = [
             { id: 'finder', name: 'Finder', icon: 'icons/finder.png' },
             { id: 'safari', name: 'Safari', icon: 'icons/safari.png' },
-            { id: 'mail', name: 'Mail', icon: 'icons/mail.png' },
             { id: 'photos', name: 'Photos', icon: 'icons/photos.png' },
+            { id: 'mail', name: 'Mail', icon: 'icons/mail.png' },
             { id: 'messages', name: 'Messages', icon: 'icons/messages.png' },
             { id: 'music', name: 'Music', icon: 'icons/music.png' },
             { id: 'calendar', name: 'Calendar', icon: 'icons/calendar.png' },
@@ -172,10 +172,28 @@ class MacOSDock {
                 }
             } else {
                 console.error("SystemPreferences not found!");
-                // Try to initialize it
                 setTimeout(() => {
                     if (window.SystemPreferences) {
                         window.SystemPreferences.open();
+                    }
+                }, 100);
+            }
+        }
+        
+        // Photos App
+        if (appId === 'photos') {
+            console.log("Opening Photos...");
+            if (window.PhotosApp) {
+                if (!window.PhotosApp.isOpen) {
+                    window.PhotosApp.open();
+                } else {
+                    window.PhotosApp.bringToFront();
+                }
+            } else {
+                console.error("PhotosApp not found!");
+                setTimeout(() => {
+                    if (window.PhotosApp) {
+                        window.PhotosApp.open();
                     }
                 }, 100);
             }
@@ -191,7 +209,7 @@ class MacOSDock {
             }, 100);
         }
     }
-} // ✅ THIS WAS MISSING! This closes the MacOSDock class
+}
 
 // Initialize dock when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
