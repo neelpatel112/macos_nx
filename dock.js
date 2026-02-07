@@ -198,6 +198,18 @@ class MacOSDock {
                 }, 100);
             }
         }
+
+  // Music App
+    if (appId === 'music') {
+        console.log("Opening Music...");
+        if (window.MusicApp) {
+            if (!window.MusicApp.isOpen) {
+                window.MusicApp.open();
+            } else {
+                window.MusicApp.bringToFront();
+            }
+        }
+    }
         
         // Visual feedback
         const button = this.dockEl.querySelector(`[data-app="${appId}"]`);
