@@ -1,68 +1,145 @@
-// photos.js - macOS Photos App
+// photos.js - BUILT FOR YOUR EXACT FILE STRUCTURE
 class PhotosApp {
     constructor() {
         this.window = null;
         this.isOpen = false;
-        this.currentView = 'grid'; // 'grid' or 'single'
+        this.currentView = 'grid';
         this.selectedPhotos = new Set();
-        this.currentAlbum = 'recents';
+        this.currentAlbum = 'all';
         this.currentPhotoIndex = 0;
+        
+        // Your exact album structure
         this.albums = {
-            recents: { name: 'Recents', count: 10, icon: 'fas fa-clock' },
-            favorites: { name: 'Favorites', count: 4, icon: 'fas fa-heart' },
-            vacation: { name: 'Vacation', count: 4, icon: 'fas fa-umbrella-beach' },
-            nature: { name: 'Nature', count: 4, icon: 'fas fa-tree' },
-            portraits: { name: 'Portraits', count: 3, icon: 'fas fa-user' }
+            'all': { name: 'All Photos', count: 0, icon: 'fas fa-images' },
+            'recents': { name: 'Recents', count: 9, icon: 'fas fa-clock' },
+            'favorites': { name: 'Favorites', count: 4, icon: 'fas fa-heart' },
+            'vacation': { name: 'Vacation', count: 4, icon: 'fas fa-umbrella-beach' },
+            'nature': { name: 'Nature', count: 4, icon: 'fas fa-tree' },
+            'portraits': { name: 'Portraits', count: 3, icon: 'fas fa-user' }
         };
-        this.photos = this.generateSamplePhotos();
+        
+        // ALL YOUR PHOTOS WITH EXACT PATHS
+        this.photos = this.createPhotoDatabase();
+        
         this.init();
+    }
+    
+    // Creates the complete photo database with your exact file names
+    createPhotoDatabase() {
+        const allPhotos = [];
+        let photoId = 1;
+        
+        // ====== RECENTS ALBUM ======
+        // photos/recents/ - 9 photos
+        const recentsFiles = ['10.jpg', '11.jpg', '12.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg'];
+        recentsFiles.forEach(fileName => {
+            allPhotos.push({
+                id: `photo_${photoId++}`,
+                name: `Recent ${fileName.split('.')[0]}`,
+                fileName: fileName,
+                folder: 'photos/recents/',
+                album: 'recents',
+                date: this.getRandomDate(),
+                size: `${Math.floor(Math.random() * 3) + 2}.${Math.floor(Math.random() * 9)} MB`,
+                dimensions: '4032 × 3024',
+                location: 'Various',
+                favorite: Math.random() > 0.7,
+                url: 'photos/recents/' + fileName
+            });
+        });
+        
+        // ====== FAVORITES ALBUM ======
+        // photos/favorites/ - 4 photos
+        const favoritesFiles = ['1.jpg', '2.jpg', '3.jpg', '4.jpg'];
+        favoritesFiles.forEach(fileName => {
+            allPhotos.push({
+                id: `photo_${photoId++}`,
+                name: `Favorite ${fileName.split('.')[0]}`,
+                fileName: fileName,
+                folder: 'photos/favorites/',
+                album: 'favorites',
+                date: this.getRandomDate(),
+                size: `${Math.floor(Math.random() * 3) + 2}.${Math.floor(Math.random() * 9)} MB`,
+                dimensions: '4032 × 3024',
+                location: 'Special Moments',
+                favorite: true, // All are favorites!
+                url: 'photos/favorites/' + fileName
+            });
+        });
+        
+        // ====== VACATION ALBUM ======
+        // photos/albums/vacation/ - 4 photos
+        const vacationFiles = ['12.jpg', '3.jpg', '4.jpg', '5.jpg'];
+        vacationFiles.forEach(fileName => {
+            allPhotos.push({
+                id: `photo_${photoId++}`,
+                name: `Vacation ${fileName.split('.')[0]}`,
+                fileName: fileName,
+                folder: 'photos/albums/vacation/',
+                album: 'vacation',
+                date: this.getRandomDate(),
+                size: `${Math.floor(Math.random() * 3) + 2}.${Math.floor(Math.random() * 9)} MB`,
+                dimensions: '4032 × 3024',
+                location: 'Beach Resort',
+                favorite: Math.random() > 0.7,
+                url: 'photos/albums/vacation/' + fileName
+            });
+        });
+        
+        // ====== NATURE ALBUM ======
+        // photos/albums/nature/ - 4 photos
+        const natureFiles = ['1.jpg', '11.jpg', '2.jpg', '8.jpg'];
+        natureFiles.forEach(fileName => {
+            allPhotos.push({
+                id: `photo_${photoId++}`,
+                name: `Nature ${fileName.split('.')[0]}`,
+                fileName: fileName,
+                folder: 'photos/albums/nature/',
+                album: 'nature',
+                date: this.getRandomDate(),
+                size: `${Math.floor(Math.random() * 3) + 2}.${Math.floor(Math.random() * 9)} MB`,
+                dimensions: '4032 × 3024',
+                location: 'Forest & Mountains',
+                favorite: Math.random() > 0.7,
+                url: 'photos/albums/nature/' + fileName
+            });
+        });
+        
+        // ====== PORTRAITS ALBUM ======
+        // photos/albums/portraits/ - 3 photos
+        const portraitsFiles = ['10.jpg', '7.jpg', '9.jpg'];
+        portraitsFiles.forEach(fileName => {
+            allPhotos.push({
+                id: `photo_${photoId++}`,
+                name: `Portrait ${fileName.split('.')[0]}`,
+                fileName: fileName,
+                folder: 'photos/albums/portraits/',
+                album: 'portraits',
+                date: this.getRandomDate(),
+                size: `${Math.floor(Math.random() * 3) + 2}.${Math.floor(Math.random() * 9)} MB`,
+                dimensions: '4032 × 3024',
+                location: 'Studio',
+                favorite: Math.random() > 0.7,
+                url: 'photos/albums/portraits/' + fileName
+            });
+        });
+        
+        console.log(`✅ Created database with ${allPhotos.length} photos from your folders`);
+        return allPhotos;
+    }
+    
+    getRandomDate() {
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const month = months[Math.floor(Math.random() * months.length)];
+        const day = Math.floor(Math.random() * 28) + 1;
+        const year = 2024;
+        return `${month} ${day}, ${year}`;
     }
     
     init() {
         this.createWindow();
         this.setupEventListeners();
-        this.loadPhotos();
-        console.log('📸 Photos App initialized');
-    }
-    
-    generateSamplePhotos() {
-        // Generate sample photo data
-        const photos = [];
-        const locations = ['Beach', 'Mountain', 'Forest', 'City', 'Lake', 'Sunset'];
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        
-        // Recent photos
-        for (let i = 1; i <= 10; i++) {
-            photos.push({
-                id: `photo_${i}`,
-                name: `Photo ${i}`,
-                album: 'recents',
-                date: `${months[Math.floor(Math.random() * 12)]} ${Math.floor(Math.random() * 28) + 1}, 2024`,
-                size: `${Math.floor(Math.random() * 5) + 2} MB`,
-                dimensions: `${Math.floor(Math.random() * 1000) + 2000} × ${Math.floor(Math.random() * 800) + 1500}`,
-                location: locations[Math.floor(Math.random() * locations.length)],
-                favorite: i <= 4
-            });
-        }
-        
-        // Album photos
-        ['vacation', 'nature', 'portraits'].forEach(album => {
-            const count = album === 'portraits' ? 3 : 4;
-            for (let i = 1; i <= count; i++) {
-                photos.push({
-                    id: `${album}_${i}`,
-                    name: `${album.charAt(0).toUpperCase() + album.slice(1)} ${i}`,
-                    album: album,
-                    date: `${months[Math.floor(Math.random() * 12)]} ${Math.floor(Math.random() * 28) + 1}, 2024`,
-                    size: `${Math.floor(Math.random() * 5) + 2} MB`,
-                    dimensions: `${Math.floor(Math.random() * 1000) + 2000} × ${Math.floor(Math.random() * 800) + 1500}`,
-                    location: album === 'vacation' ? 'Beach' : album === 'nature' ? 'Mountain' : 'Studio',
-                    favorite: false
-                });
-            }
-        });
-        
-        return photos;
+        console.log('📸 Photos App initialized with your exact photos');
     }
     
     createWindow() {
@@ -102,20 +179,20 @@ class PhotosApp {
                     </div>
                     
                     <div class="sidebar-section">
-                        <div class="sidebar-item active" data-view="recents">
+                        <div class="sidebar-item active" data-view="all">
+                            <i class="fas fa-images"></i>
+                            <span>All Photos</span>
+                            <span class="count">${this.photos.length}</span>
+                        </div>
+                        <div class="sidebar-item" data-view="recents">
                             <i class="fas fa-clock"></i>
                             <span>Recents</span>
-                            <span class="count">10</span>
+                            <span class="count">9</span>
                         </div>
                         <div class="sidebar-item" data-view="favorites">
                             <i class="fas fa-heart"></i>
                             <span>Favorites</span>
                             <span class="count">4</span>
-                        </div>
-                        <div class="sidebar-item" data-view="all">
-                            <i class="fas fa-images"></i>
-                            <span>All Photos</span>
-                            <span class="count">21</span>
                         </div>
                     </div>
                     
@@ -125,7 +202,7 @@ class PhotosApp {
                         </div>
                         
                         <div class="album-item" data-album="vacation">
-                            <div class="album-thumb">
+                            <div class="album-thumb" style="background: linear-gradient(135deg, #FF9A9E 0%, #FAD0C4 100%);">
                                 <i class="fas fa-umbrella-beach"></i>
                             </div>
                             <div class="album-info">
@@ -135,7 +212,7 @@ class PhotosApp {
                         </div>
                         
                         <div class="album-item" data-album="nature">
-                            <div class="album-thumb">
+                            <div class="album-thumb" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
                                 <i class="fas fa-tree"></i>
                             </div>
                             <div class="album-info">
@@ -145,7 +222,7 @@ class PhotosApp {
                         </div>
                         
                         <div class="album-item" data-album="portraits">
-                            <div class="album-thumb">
+                            <div class="album-thumb" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                                 <i class="fas fa-user"></i>
                             </div>
                             <div class="album-info">
@@ -153,6 +230,13 @@ class PhotosApp {
                                 <div class="album-count">3 photos</div>
                             </div>
                         </div>
+                    </div>
+                    
+                    <div class="sidebar-section" style="margin-top: auto; padding-top: 20px; border-top: 1px solid #404040;">
+                        <button class="sidebar-item" id="refreshBtnSidebar" style="color: #34C759;">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Refresh Library</span>
+                        </button>
                     </div>
                 </div>
                 
@@ -165,14 +249,14 @@ class PhotosApp {
                             Back
                         </button>
                         
-                        <button class="toolbar-btn" id="importBtn">
-                            <i class="fas fa-plus"></i>
-                            Import
+                        <button class="toolbar-btn" id="slideshowBtn">
+                            <i class="fas fa-play"></i>
+                            Slideshow
                         </button>
                         
-                        <button class="toolbar-btn" id="editBtn">
-                            <i class="fas fa-sliders-h"></i>
-                            Edit
+                        <button class="toolbar-btn" id="addToAlbumBtn">
+                            <i class="fas fa-folder-plus"></i>
+                            Add to Album
                         </button>
                         
                         <button class="toolbar-btn" id="shareBtn">
@@ -186,47 +270,19 @@ class PhotosApp {
                         </button>
                         
                         <div class="toolbar-search">
-                            <input type="text" class="search-box" placeholder="Search photos...">
-                        </div>
-                    </div>
-                    
-                    <!-- Edit Tools (Hidden by default) -->
-                    <div class="edit-tools" id="editTools">
-                        <div class="edit-section">
-                            <h4>Adjustments</h4>
-                            <div style="margin-bottom: 15px;">
-                                <label style="color: #999; font-size: 12px; display: block; margin-bottom: 5px;">Brightness</label>
-                                <input type="range" min="0" max="100" value="50" class="edit-slider" id="brightnessSlider">
-                            </div>
-                            <div style="margin-bottom: 15px;">
-                                <label style="color: #999; font-size: 12px; display: block; margin-bottom: 5px;">Contrast</label>
-                                <input type="range" min="0" max="100" value="50" class="edit-slider" id="contrastSlider">
-                            </div>
-                            <div style="margin-bottom: 15px;">
-                                <label style="color: #999; font-size: 12px; display: block; margin-bottom: 5px;">Saturation</label>
-                                <input type="range" min="0" max="100" value="50" class="edit-slider" id="saturationSlider">
-                            </div>
-                            
-                            <h4>Filters</h4>
-                            <div class="edit-presets">
-                                <button class="edit-preset" data-filter="none">None</button>
-                                <button class="edit-preset" data-filter="vintage">Vintage</button>
-                                <button class="edit-preset" data-filter="bw">B&W</button>
-                                <button class="edit-preset" data-filter="dramatic">Dramatic</button>
-                                <button class="edit-preset" data-filter="warm">Warm</button>
-                            </div>
+                            <input type="text" class="search-box" placeholder="Search by name (e.g., 'Nature 1')..." id="searchInput">
                         </div>
                     </div>
                     
                     <!-- Photos Grid View -->
                     <div class="photos-grid-container" id="gridView">
                         <div class="grid-header">
-                            <h2 class="grid-title" id="gridTitle">Recents</h2>
-                            <p class="grid-subtitle" id="gridSubtitle">10 photos</p>
+                            <h2 class="grid-title" id="gridTitle">All Photos</h2>
+                            <p class="grid-subtitle" id="gridSubtitle">${this.photos.length} photos from your library</p>
                         </div>
                         
                         <div class="photos-grid" id="photosGrid">
-                            <!-- Photos will be loaded here -->
+                            <!-- Photos will load here -->
                         </div>
                     </div>
                     
@@ -240,7 +296,8 @@ class PhotosApp {
                                 <button class="photo-nav-btn" id="nextBtn">
                                     <i class="fas fa-chevron-right"></i>
                                 </button>
-                                <span class="photo-title" id="photoTitle">Photo 1</span>
+                                <span class="photo-title" id="photoTitle">Photo</span>
+                                <span class="photo-counter" id="photoCounter" style="margin-left: 10px; color: #999; font-size: 12px;">1 of ${this.photos.length}</span>
                             </div>
                             
                             <div>
@@ -252,11 +309,20 @@ class PhotosApp {
                                     <i class="fas fa-info-circle"></i>
                                     Info
                                 </button>
+                                <button class="toolbar-btn" id="downloadBtn">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    Open
+                                </button>
                             </div>
                         </div>
                         
                         <div class="photo-view-content">
-                            <img src="" alt="Photo" class="photo-full" id="fullPhoto">
+                            <div class="photo-loading" id="photoLoading" style="color: #666; text-align: center; padding: 40px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 48px; margin-bottom: 20px;"></i>
+                                <p>Loading your photo...</p>
+                            </div>
+                            <img src="" alt="Photo" class="photo-full" id="fullPhoto" style="display: none;"
+                                 onerror="this.onerror=null; this.style.display='none'; document.getElementById('photoLoading').innerHTML='<i class=\\'fas fa-exclamation-triangle\\' style=\\'font-size:48px; color:#FF9500; margin-bottom:20px;\\'></i><h3>Photo not found</h3><p>Check if file exists: ' + this.src + '</p>';">
                         </div>
                     </div>
                 </div>
@@ -264,47 +330,57 @@ class PhotosApp {
                 <!-- Info Panel -->
                 <div class="info-panel" id="infoPanel" style="display: none;">
                     <div class="info-section">
-                        <h4>Photo Info</h4>
+                        <h4>Photo Details</h4>
                         <div class="info-item">
-                            <div class="info-label">Name</div>
-                            <div class="info-value" id="infoName">Photo 1</div>
+                            <div class="info-label">File Name</div>
+                            <div class="info-value" id="infoFileName">1.jpg</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Date</div>
+                            <div class="info-label">Folder Path</div>
+                            <div class="info-value" id="infoFolder" style="font-size: 11px; word-break: break-all;">photos/recents/</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Album</div>
+                            <div class="info-value" id="infoAlbum">Recents</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Date Added</div>
                             <div class="info-value" id="infoDate">Jan 15, 2024</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Size</div>
+                            <div class="info-label">File Size</div>
                             <div class="info-value" id="infoSize">3.2 MB</div>
                         </div>
                         <div class="info-item">
-                            <div class="info-label">Dimensions</div>
-                            <div class="info-value" id="infoDimensions">4032 × 3024</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Location</div>
-                            <div class="info-value" id="infoLocation">Beach</div>
+                            <div class="info-label">Status</div>
+                            <div class="info-value" id="infoStatus" style="color: #34C759;">✓ Available</div>
                         </div>
                     </div>
                     
                     <div class="info-section">
-                        <h4>Edit History</h4>
-                        <div class="info-item">
-                            <div class="info-label">Last edited</div>
-                            <div class="info-value">2 days ago</div>
-                        </div>
+                        <h4>Quick Actions</h4>
+                        <button class="info-action-btn" id="revealInFolderBtn">
+                            <i class="fas fa-folder-open"></i>
+                            Reveal in Folder
+                        </button>
+                        <button class="info-action-btn" id="copyPathBtn">
+                            <i class="fas fa-copy"></i>
+                            Copy File Path
+                        </button>
                     </div>
                 </div>
+            </div>
+            
+            <div class="window-statusbar">
+                <span id="statusInfo">Ready - ${this.photos.length} photos loaded</span>
+                <span style="margin-left: auto; color: #999; font-size: 11px;">
+                    <i class="fas fa-hdd"></i> Local Storage
+                </span>
             </div>
         `;
         
         document.body.appendChild(this.window);
-        
-        // Load CSS
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'photos.css';
-        document.head.appendChild(link);
+        this.loadPhotos(); // Load photos immediately
     }
     
     setupEventListeners() {
@@ -324,36 +400,25 @@ class PhotosApp {
         });
         
         // Toolbar buttons
-        this.window.querySelector('#importBtn').addEventListener('click', () => this.importPhotos());
-        this.window.querySelector('#editBtn').addEventListener('click', () => this.toggleEditTools());
+        this.window.querySelector('#slideshowBtn').addEventListener('click', () => this.startSlideshow());
+        this.window.querySelector('#addToAlbumBtn').addEventListener('click', () => this.addToAlbum());
         this.window.querySelector('#shareBtn').addEventListener('click', () => this.sharePhoto());
         this.window.querySelector('#deleteBtn').addEventListener('click', () => this.deletePhotos());
         this.window.querySelector('#backBtn').addEventListener('click', () => this.showGridView());
         this.window.querySelector('#favoriteBtn').addEventListener('click', () => this.toggleFavorite());
         this.window.querySelector('#infoBtn').addEventListener('click', () => this.toggleInfoPanel());
+        this.window.querySelector('#downloadBtn').addEventListener('click', () => this.openPhoto());
+        this.window.querySelector('#refreshBtnSidebar').addEventListener('click', () => this.refreshLibrary());
+        this.window.querySelector('#revealInFolderBtn').addEventListener('click', () => this.revealInFolder());
+        this.window.querySelector('#copyPathBtn').addEventListener('click', () => this.copyFilePath());
         
         // Photo navigation
         this.window.querySelector('#prevBtn').addEventListener('click', () => this.prevPhoto());
         this.window.querySelector('#nextBtn').addEventListener('click', () => this.nextPhoto());
         
         // Search
-        this.window.querySelector('.search-box').addEventListener('input', (e) => {
+        this.window.querySelector('#searchInput').addEventListener('input', (e) => {
             this.searchPhotos(e.target.value);
-        });
-        
-        // Edit sliders
-        ['brightnessSlider', 'contrastSlider', 'saturationSlider'].forEach(id => {
-            this.window.querySelector(`#${id}`).addEventListener('input', (e) => {
-                this.applyEdit(e.target.id, e.target.value);
-            });
-        });
-        
-        // Filters
-        this.window.querySelectorAll('.edit-preset').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const filter = e.currentTarget.dataset.filter;
-                this.applyFilter(filter);
-            });
         });
         
         // Make window draggable
@@ -362,14 +427,22 @@ class PhotosApp {
     
     loadPhotos() {
         const grid = this.window.querySelector('#photosGrid');
+        if (!grid) return;
+        
         grid.innerHTML = '';
         
-        const filteredPhotos = this.photos.filter(photo => {
-            if (this.currentAlbum === 'recents') return photo.album === 'recents';
-            if (this.currentAlbum === 'favorites') return photo.favorite;
-            if (this.currentAlbum === 'all') return true;
-            return photo.album === this.currentAlbum;
-        });
+        const filteredPhotos = this.getFilteredPhotos();
+        
+        if (filteredPhotos.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #666;">
+                    <i class="fas fa-images" style="font-size: 48px; margin-bottom: 20px; color: #404040;"></i>
+                    <h3>No photos found</h3>
+                    <p>Try selecting a different album or check your photos folder</p>
+                </div>
+            `;
+            return;
+        }
         
         filteredPhotos.forEach((photo, index) => {
             const photoElement = document.createElement('div');
@@ -377,18 +450,16 @@ class PhotosApp {
             photoElement.dataset.id = photo.id;
             photoElement.dataset.index = index;
             
-            // Try to load actual photo, fallback to placeholder
-            const photoPath = this.getPhotoPath(photo);
-            
             photoElement.innerHTML = `
-                <img src="${photoPath}" alt="${photo.name}" class="photo-image" onerror="this.src='https://images.unsplash.com/photo-${index + 1}?w=400&h=300&fit=crop&auto=format'}">
+                <img src="${photo.url}" alt="${photo.name}" class="photo-image" 
+                     onerror="this.style.opacity='0.5'; this.nextElementSibling.innerHTML='<span style=\\'color:#FF3B30; font-size:11px;\\'>Missing: ${photo.fileName}</span>';">
                 <div class="photo-info">
                     <h4 class="photo-name">${photo.name}</h4>
-                    <p class="photo-date">${photo.date}</p>
+                    <p class="photo-date">${photo.date} • ${photo.album}</p>
                 </div>
                 <div class="photo-actions">
-                    <button class="action-btn favorite-btn" title="Favorite">
-                        <i class="${photo.favorite ? 'fas' : 'far'} fa-heart"></i>
+                    <button class="action-btn favorite-btn" title="${photo.favorite ? 'Remove from Favorites' : 'Add to Favorites'}">
+                        <i class="${photo.favorite ? 'fas' : 'far'} fa-heart" style="${photo.favorite ? 'color: #FF3B30;' : ''}"></i>
                     </button>
                     <button class="action-btn info-btn" title="Info">
                         <i class="fas fa-info"></i>
@@ -424,26 +495,23 @@ class PhotosApp {
             grid.appendChild(photoElement);
         });
         
-        // Update counts
-        this.window.querySelector('#gridTitle').textContent = 
-            this.currentAlbum.charAt(0).toUpperCase() + this.currentAlbum.slice(1);
-        this.window.querySelector('#gridSubtitle').textContent = 
-            `${filteredPhotos.length} photo${filteredPhotos.length !== 1 ? 's' : ''}`;
+        this.updateGridHeader();
     }
     
-    getPhotoPath(photo) {
-        // Try to load from your photos folder
-        if (photo.album === 'recents') {
-            return `photos/recents/photo_${photo.id.split('_')[1]}.jpg`;
-        } else if (['vacation', 'nature', 'portraits'].includes(photo.album)) {
-            return `photos/albums/${photo.album}/${photo.album}_${photo.id.split('_')[1]}.jpg`;
-        } else if (photo.album === 'favorites') {
-            return `photos/favorites/fav_${photo.id.split('_')[1]}.jpg`;
-        }
+    getFilteredPhotos() {
+        if (this.currentAlbum === 'all') return this.photos;
+        return this.photos.filter(photo => photo.album === this.currentAlbum);
+    }
+    
+    updateGridHeader() {
+        const filteredPhotos = this.getFilteredPhotos();
+        const title = this.window.querySelector('#gridTitle');
+        const subtitle = this.window.querySelector('#gridSubtitle');
         
-        // Fallback to Unsplash if file doesn't exist
-        const photoId = parseInt(photo.id.split('_')[1]) || 1;
-        return `https://images.unsplash.com/photo-${photoId}?w=400&h=300&fit=crop&auto=format`;
+        if (title && subtitle) {
+            title.textContent = this.albums[this.currentAlbum]?.name || 'Photos';
+            subtitle.textContent = `${filteredPhotos.length} photo${filteredPhotos.length !== 1 ? 's' : ''} from your library`;
+        }
     }
     
     switchView(view) {
@@ -474,25 +542,25 @@ class PhotosApp {
         this.window.querySelector('#gridView').style.display = 'none';
         this.window.querySelector('#singleView').classList.add('active');
         this.window.querySelector('#backBtn').style.display = 'flex';
-        this.window.querySelector('#editTools').classList.remove('active');
+        this.window.querySelector('#infoPanel').style.display = 'none';
         
-        // Update photo
-        const photoPath = this.getPhotoPath(photo);
+        // Show loading
+        const loading = this.window.querySelector('#photoLoading');
         const fullPhoto = this.window.querySelector('#fullPhoto');
-        fullPhoto.src = photoPath;
+        loading.style.display = 'block';
+        fullPhoto.style.display = 'none';
+        
+        // Load photo
+        fullPhoto.src = photo.url;
         fullPhoto.alt = photo.name;
         
-        // Update title
+        // Update title and counter
         this.window.querySelector('#photoTitle').textContent = photo.name;
+        this.window.querySelector('#photoCounter').textContent = `${index + 1} of ${filteredPhotos.length}`;
         
         // Update favorite button
         const favoriteBtn = this.window.querySelector('#favoriteBtn');
         favoriteBtn.innerHTML = `<i class="${photo.favorite ? 'fas' : 'far'} fa-heart"></i> ${photo.favorite ? 'Favorited' : 'Favorite'}`;
-        
-        // Update info panel if open
-        if (this.window.querySelector('#infoPanel').style.display !== 'none') {
-            this.updateInfoPanel(photo);
-        }
         
         this.currentView = 'single';
     }
@@ -521,15 +589,6 @@ class PhotosApp {
         this.viewPhoto(this.currentPhotoIndex);
     }
     
-    getFilteredPhotos() {
-        return this.photos.filter(photo => {
-            if (this.currentAlbum === 'recents') return photo.album === 'recents';
-            if (this.currentAlbum === 'favorites') return photo.favorite;
-            if (this.currentAlbum === 'all') return true;
-            return photo.album === this.currentAlbum;
-        });
-    }
-    
     togglePhotoSelection(photoId, element) {
         if (this.selectedPhotos.has(photoId)) {
             this.selectedPhotos.delete(photoId);
@@ -553,15 +612,20 @@ class PhotosApp {
         if (photo) {
             photo.favorite = !photo.favorite;
             
-            // Update UI
+            // Update UI in grid
             const photoElement = this.window.querySelector(`[data-id="${photoId}"]`);
             if (photoElement) {
                 const heartIcon = photoElement.querySelector('.favorite-btn i');
                 heartIcon.className = photo.favorite ? 'fas fa-heart' : 'far fa-heart';
+                heartIcon.style.color = photo.favorite ? '#FF3B30' : '';
+                photoElement.querySelector('.favorite-btn').title = 
+                    photo.favorite ? 'Remove from Favorites' : 'Add to Favorites';
             }
             
             // Update favorites count
             const favoritesCount = this.photos.filter(p => p.favorite).length;
+            this.albums.favorites.count = favoritesCount;
+            
             const favoritesItem = this.window.querySelector('[data-view="favorites"] .count');
             if (favoritesItem) {
                 favoritesItem.textContent = favoritesCount;
@@ -571,6 +635,19 @@ class PhotosApp {
             if (this.currentAlbum === 'favorites') {
                 this.loadPhotos();
             }
+            
+            // Update favorite button in single view
+            if (this.currentView === 'single') {
+                const currentPhoto = this.getFilteredPhotos()[this.currentPhotoIndex];
+                if (currentPhoto && currentPhoto.id === photoId) {
+                    const favoriteBtn = this.window.querySelector('#favoriteBtn');
+                    favoriteBtn.innerHTML = `<i class="${photo.favorite ? 'fas' : 'far'} fa-heart"></i> ${photo.favorite ? 'Favorited' : 'Favorite'}`;
+                }
+            }
+            
+            // Update status bar
+            this.window.querySelector('#statusInfo').textContent = 
+                photo.favorite ? `✓ Added "${photo.name}" to Favorites` : `✓ Removed "${photo.name}" from Favorites`;
         }
     }
     
@@ -580,10 +657,6 @@ class PhotosApp {
             const photo = filteredPhotos[this.currentPhotoIndex];
             if (photo) {
                 this.togglePhotoFavorite(photo.id);
-                
-                // Update button
-                const favoriteBtn = this.window.querySelector('#favoriteBtn');
-                favoriteBtn.innerHTML = `<i class="${photo.favorite ? 'fas' : 'far'} fa-heart"></i> ${photo.favorite ? 'Favorited' : 'Favorite'}`;
             }
         }
     }
@@ -594,11 +667,13 @@ class PhotosApp {
     }
     
     updateInfoPanel(photo) {
-        this.window.querySelector('#infoName').textContent = photo.name;
+        this.window.querySelector('#infoFileName').textContent = photo.fileName;
+        this.window.querySelector('#infoFolder').textContent = photo.folder;
+        this.window.querySelector('#infoAlbum').textContent = this.albums[photo.album]?.name || photo.album;
         this.window.querySelector('#infoDate').textContent = photo.date;
         this.window.querySelector('#infoSize').textContent = photo.size;
-        this.window.querySelector('#infoDimensions').textContent = photo.dimensions;
-        this.window.querySelector('#infoLocation').textContent = photo.location;
+        this.window.querySelector('#infoStatus').textContent = '✓ Available';
+        this.window.querySelector('#infoStatus').style.color = '#34C759';
     }
     
     toggleInfoPanel() {
@@ -615,77 +690,66 @@ class PhotosApp {
         }
     }
     
-    toggleEditTools() {
-        const editTools = this.window.querySelector('#editTools');
-        editTools.classList.toggle('active');
-    }
+    // ====== APP FUNCTIONALITY ======
     
-    applyEdit(type, value) {
-        const fullPhoto = this.window.querySelector('#fullPhoto');
-        if (!fullPhoto) return;
-        
-        let filter = '';
-        
-        switch(type) {
-            case 'brightnessSlider':
-                filter = `brightness(${value}%)`;
-                break;
-            case 'contrastSlider':
-                filter = `contrast(${value}%)`;
-                break;
-            case 'saturationSlider':
-                filter = `saturate(${value}%)`;
-                break;
+    startSlideshow() {
+        const filteredPhotos = this.getFilteredPhotos();
+        if (filteredPhotos.length === 0) {
+            alert('No photos to show in slideshow!');
+            return;
         }
         
-        fullPhoto.style.filter = filter;
+        alert(`Starting slideshow with ${filteredPhotos.length} photos from ${this.albums[this.currentAlbum].name}`);
+        // In a full implementation, this would start an actual slideshow
     }
     
-    applyFilter(filter) {
-        const fullPhoto = this.window.querySelector('#fullPhoto');
-        if (!fullPhoto) return;
-        
-        let filterValue = '';
-        switch(filter) {
-            case 'vintage':
-                filterValue = 'sepia(0.5) contrast(1.2) brightness(0.9)';
-                break;
-            case 'bw':
-                filterValue = 'grayscale(100%)';
-                break;
-            case 'dramatic':
-                filterValue = 'contrast(1.5) saturate(1.2)';
-                break;
-            case 'warm':
-                filterValue = 'sepia(0.3) saturate(1.3)';
-                break;
-            default:
-                filterValue = 'none';
+    addToAlbum() {
+        if (this.selectedPhotos.size === 0) {
+            alert('Select photos first (click on them)');
+            return;
         }
         
-        fullPhoto.style.filter = filterValue;
-    }
-    
-    importPhotos() {
-        console.log('Import photos clicked');
-        // In a real app, this would open a file dialog
-        alert('In a real app, this would open a file dialog to import photos!');
+        alert(`Would add ${this.selectedPhotos.size} photos to an album`);
     }
     
     sharePhoto() {
-        console.log('Share photo clicked');
-        alert('Sharing feature would be implemented here!');
+        if (this.currentView === 'single') {
+            const filteredPhotos = this.getFilteredPhotos();
+            const photo = filteredPhotos[this.currentPhotoIndex];
+            if (photo) {
+                alert(`Sharing: ${photo.name} (${photo.fileName})`);
+            }
+        } else if (this.selectedPhotos.size > 0) {
+            alert(`Sharing ${this.selectedPhotos.size} selected photos`);
+        } else {
+            alert('Select photos or open a photo to share');
+        }
+    }
+    
+    openPhoto() {
+        if (this.currentView === 'single') {
+            const filteredPhotos = this.getFilteredPhotos();
+            const photo = filteredPhotos[this.currentPhotoIndex];
+            if (photo) {
+                // Try to open in new tab
+                window.open(photo.url, '_blank');
+                this.window.querySelector('#statusInfo').textContent = `Opened ${photo.name} in new tab`;
+            }
+        }
     }
     
     deletePhotos() {
         if (this.selectedPhotos.size === 0) {
-            alert('Select photos to delete');
+            alert('Select photos to delete (click on them in grid view)');
             return;
         }
         
-        if (confirm(`Delete ${this.selectedPhotos.size} selected photo${this.selectedPhotos.size !== 1 ? 's' : ''}?`)) {
+        if (confirm(`Permanently delete ${this.selectedPhotos.size} selected photo${this.selectedPhotos.size !== 1 ? 's' : ''}?`)) {
             // Remove from photos array
             this.photos = this.photos.filter(photo => !this.selectedPhotos.has(photo.id));
+            
+            // Update album counts
+            this.updateAlbumCounts();
             
             // Clear selection
             this.selectedPhotos.clear();
@@ -693,8 +757,41 @@ class PhotosApp {
             // Reload photos
             this.loadPhotos();
             
-            console.log('Photos deleted');
+            this.window.querySelector('#statusInfo').textContent = `Deleted ${this.selectedPhotos.size} photos`;
+            console.log('Photos deleted from database');
         }
+    }
+    
+    updateAlbumCounts() {
+        // Recalculate counts
+        const counts = {
+            all: this.photos.length,
+            recents: this.photos.filter(p => p.album === 'recents').length,
+            favorites: this.photos.filter(p => p.favorite).length,
+            vacation: this.photos.filter(p => p.album === 'vacation').length,
+            nature: this.photos.filter(p => p.album === 'nature').length,
+            portraits: this.photos.filter(p => p.album === 'portraits').length
+        };
+        
+        // Update UI
+        Object.keys(counts).forEach(albumId => {
+            const countElement = this.window.querySelector(`[data-view="${albumId}"] .count`);
+            if (countElement) {
+                countElement.textContent = counts[albumId];
+            }
+            
+            const albumItem = this.window.querySelector(`[data-album="${albumId}"] .album-count`);
+            if (albumItem && albumId !== 'all' && albumId !== 'favorites' && albumId !== 'recents') {
+                albumItem.textContent = `${counts[albumId]} photo${counts[albumId] !== 1 ? 's' : ''}`;
+            }
+        });
+        
+        this.albums.all.count = counts.all;
+        this.albums.recents.count = counts.recents;
+        this.albums.favorites.count = counts.favorites;
+        this.albums.vacation.count = counts.vacation;
+        this.albums.nature.count = counts.nature;
+        this.albums.portraits.count = counts.portraits;
     }
     
     searchPhotos(query) {
@@ -713,7 +810,40 @@ class PhotosApp {
         });
     }
     
-    // Window management
+    refreshLibrary() {
+        // Simulate refreshing
+        this.window.querySelector('#statusInfo').textContent = 'Refreshing photo library...';
+        setTimeout(() => {
+            this.window.querySelector('#statusInfo').textContent = `Ready - ${this.photos.length} photos loaded`;
+            alert('Photo library refreshed!');
+        }, 800);
+    }
+    
+    revealInFolder() {
+        if (this.currentView === 'single') {
+            const filteredPhotos = this.getFilteredPhotos();
+            const photo = filteredPhotos[this.currentPhotoIndex];
+            if (photo) {
+                alert(`Would reveal in folder: ${photo.folder}`);
+            }
+        }
+    }
+    
+    copyFilePath() {
+        if (this.currentView === 'single') {
+            const filteredPhotos = this.getFilteredPhotos();
+            const photo = filteredPhotos[this.currentPhotoIndex];
+            if (photo) {
+                // Copy to clipboard
+                navigator.clipboard.writeText(photo.folder + photo.fileName).then(() => {
+                    this.window.querySelector('#statusInfo').textContent = `Copied path: ${photo.fileName}`;
+                });
+            }
+        }
+    }
+    
+    // ====== WINDOW MANAGEMENT ======
+    
     open() {
         this.window.style.display = 'flex';
         this.isOpen = true;
@@ -725,7 +855,7 @@ class PhotosApp {
             this.window.style.animation = 'windowAppear 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.3)';
         }, 10);
         
-        console.log('📸 Photos app opened');
+        console.log('📸 Photos app opened with your exact file structure');
         return true;
     }
     
@@ -799,4 +929,4 @@ class PhotosApp {
 // Initialize Photos App
 window.addEventListener('DOMContentLoaded', () => {
     window.PhotosApp = new PhotosApp();
-}); 
+});
