@@ -1,3 +1,4 @@
+// dock.js - UPDATED WITH FULL APP SUPPORT
 class MacOSDock {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
@@ -159,11 +160,11 @@ class MacOSDock {
     }
     
     launchApp(appId) {
-        console.log("Launching:", appId);
+        console.log("🚀 Launching:", appId);
         
         // System Preferences
         if (appId === 'system') {
-            console.log("Opening System Preferences...");
+            console.log("🔧 Opening System Preferences...");
             if (window.SystemPreferences) {
                 if (!window.SystemPreferences.isOpen) {
                     window.SystemPreferences.open();
@@ -171,7 +172,7 @@ class MacOSDock {
                     window.SystemPreferences.bringToFront();
                 }
             } else {
-                console.error("SystemPreferences not found!");
+                console.error("❌ SystemPreferences not found!");
                 setTimeout(() => {
                     if (window.SystemPreferences) {
                         window.SystemPreferences.open();
@@ -181,8 +182,8 @@ class MacOSDock {
         }
         
         // Photos App
-        if (appId === 'photos') {
-            console.log("Opening Photos...");
+        else if (appId === 'photos') {
+            console.log("📸 Opening Photos...");
             if (window.PhotosApp) {
                 if (!window.PhotosApp.isOpen) {
                     window.PhotosApp.open();
@@ -190,7 +191,7 @@ class MacOSDock {
                     window.PhotosApp.bringToFront();
                 }
             } else {
-                console.error("PhotosApp not found!");
+                console.error("❌ PhotosApp not found!");
                 setTimeout(() => {
                     if (window.PhotosApp) {
                         window.PhotosApp.open();
@@ -198,18 +199,65 @@ class MacOSDock {
                 }, 100);
             }
         }
-
-  // Music App
-    if (appId === 'music') {
-        console.log("Opening Music...");
-        if (window.MusicApp) {
-            if (!window.MusicApp.isOpen) {
-                window.MusicApp.open();
+        
+        // Music App
+        else if (appId === 'music') {
+            console.log("🎵 Opening Music...");
+            if (window.MusicApp) {
+                if (!window.MusicApp.isOpen) {
+                    window.MusicApp.open();
+                } else {
+                    window.MusicApp.bringToFront();
+                }
             } else {
-                window.MusicApp.bringToFront();
+                console.error("❌ MusicApp not found!");
+                setTimeout(() => {
+                    if (window.MusicApp) {
+                        window.MusicApp.open();
+                    }
+                }, 100);
             }
         }
-    }
+        
+        // Finder
+        else if (appId === 'finder') {
+            console.log("📁 Opening Finder...");
+            alert("Finder would open here!\n\nThis is a placeholder - you can implement Finder functionality.");
+        }
+        
+        // Safari
+        else if (appId === 'safari') {
+            console.log("🌐 Opening Safari...");
+            alert("Safari would open here!\n\nThis is a placeholder - you can implement web browser functionality.");
+        }
+        
+        // Mail
+        else if (appId === 'mail') {
+            console.log("📧 Opening Mail...");
+            alert("Mail would open here!\n\nThis is a placeholder - you can implement email functionality.");
+        }
+        
+        // Messages
+        else if (appId === 'messages') {
+            console.log("💬 Opening Messages...");
+            alert("Messages would open here!\n\nThis is a placeholder - you can implement messaging functionality.");
+        }
+        
+        // Calendar
+        else if (appId === 'calendar') {
+            console.log("📅 Opening Calendar...");
+            alert("Calendar would open here!\n\nThis is a placeholder - you can implement calendar functionality.");
+        }
+        
+        // Trash
+        else if (appId === 'trash') {
+            console.log("🗑️ Opening Trash...");
+            alert("Trash would open here!\n\nThis is a placeholder - you can implement trash functionality.");
+        }
+        
+        else {
+            console.log("⚠️ Unknown app:", appId);
+        }
         
         // Visual feedback
         const button = this.dockEl.querySelector(`[data-app="${appId}"]`);
@@ -221,9 +269,57 @@ class MacOSDock {
             }, 100);
         }
     }
+    
+    // Helper method to check if apps are available
+    checkAppAvailability() {
+        console.log("🔍 Checking app availability:");
+        console.log("- SystemPreferences:", window.SystemPreferences ? "✅ Available" : "❌ Missing");
+        console.log("- PhotosApp:", window.PhotosApp ? "✅ Available" : "❌ Missing");
+        console.log("- MusicApp:", window.MusicApp ? "✅ Available" : "❌ Missing");
+        
+        // Create missing apps if they don't exist
+        if (!window.SystemPreferences && typeof SystemPreferences === 'function') {
+            window.SystemPreferences = new SystemPreferences();
+            console.log("🛠️ Created SystemPreferences instance");
+        }
+        
+        if (!window.PhotosApp && typeof PhotosApp === 'function') {
+            window.PhotosApp = new PhotosApp();
+            console.log("🛠️ Created PhotosApp instance");
+        }
+        
+        if (!window.MusicApp && typeof MusicApp === 'function') {
+            window.MusicApp = new MusicApp();
+            console.log("🛠️ Created MusicApp instance");
+        }
+    }
+    
+    // Public method to manually open an app (for testing)
+    openApp(appId) {
+        this.launchApp(appId);
+    }
 }
 
 // Initialize dock when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     window.macOSDock = new MacOSDock('dockContainer');
-});
+    
+    // Wait a moment for all scripts to load, then check app availability
+    setTimeout(() => {
+        window.macOSDock.checkAppAvailability();
+        
+        // Test: Uncomment to test app opening on load
+        // setTimeout(() => window.macOSDock.openApp('music'), 1000);
+    }, 500);
+    
+    // Add global shortcut to test Music app: Ctrl+Shift+M or Cmd+Shift+M
+    document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'M') {
+            e.preventDefault();
+            console.log("🎵 Testing Music app via keyboard shortcut...");
+            if (window.macOSDock) {
+                window.macOSDock.openApp('music');
+            }
+        }
+    });
+}); 
