@@ -891,3 +891,68 @@
 .icon-downloads { color: #5AC8FA; }
 .icon-cloud { color: #64D2FF; }
 .icon-users { color: #FF2D55; } 
+
+/* Window Titlebar */
+.window-titlebar {
+    height: 40px;
+    background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    justify-content: space-between;
+    cursor: move;
+    user-select: none;
+}
+
+.window-controls {
+    display: flex;
+    gap: 8px;
+    position: relative;
+    z-index: 1000;
+}
+
+.window-close, .window-minimize, .window-zoom {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.window-close {
+    background: #FF5F57;
+}
+.window-minimize {
+    background: #FFBD2E;
+}
+.window-zoom {
+    background: #28CA42;
+}
+
+.window-close:hover { background: #FF3B30; }
+.window-minimize:hover { background: #FF9500; }
+.window-zoom:hover { background: #34C759; }
+
+.window-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #000;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+} 
+
+
+/* Add this to the end of finder.css */
+@keyframes windowAppear {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px) scale(0.95); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
