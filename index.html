@@ -53,60 +53,6 @@
 <script src="music.js"></script>
 <script src="dock.js"></script>
 <script src="script.js"></script>
-
-<!-- Add this RIGHT BEFORE </body> tag -->
-<script>
-// EMERGENCY PATCH - WILL FORCE MUSIC APP TO WORK
-(function() {
-    console.log("🚨 EMERGENCY PATCH LOADED");
-    
-    // Wait for everything to load
-    setTimeout(function() {
-        console.log("🛠️ Checking system status...");
-        
-        // Force create MusicApp if it doesn't exist
-        if (!window.MusicApp && typeof MusicApp === 'function') {
-            console.log("🛠️ Creating MusicApp instance...");
-            window.MusicApp = new MusicApp();
-            console.log("✅ MusicApp created:", window.MusicApp);
-        }
-        
-        // Add click handler to music icon directly
-        setTimeout(function() {
-            const musicButton = document.querySelector('[data-app="music"]');
-            if (musicButton) {
-                console.log("🎯 Found Music button, adding direct click handler");
-                musicButton.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log("🎵 DIRECT MUSIC BUTTON CLICKED!");
-                    
-                    if (window.MusicApp) {
-                        window.MusicApp.open();
-                        console.log("✅ MusicApp opened via direct click!");
-                    } else {
-                        alert("Music app not initialized!\n\nCheck console (F12) for errors.");
-                    }
-                }, true); // Use capture phase
-            }
-        }, 500);
-        
-        // Add global keyboard shortcut
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'F8') {
-                e.preventDefault();
-                console.log("🎵 F8 pressed - forcing Music app open");
-                if (window.MusicApp) {
-                    window.MusicApp.open();
-                } else {
-                    alert("Music app not available. Check console.");
-                }
-            }
-        });
-        
-    }, 1000); // Wait 1 second
-    
-})();
 </script> 
 </body>
 </html>
