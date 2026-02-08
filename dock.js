@@ -211,6 +211,25 @@ class MacOSDock {
         }
     }
         
+// Finder App
+if (appId === 'finder') {
+    console.log("📁 Opening Finder...");
+    if (window.FinderApp) {
+        if (!window.FinderApp.isOpen) {
+            window.FinderApp.open();
+        } else {
+            window.FinderApp.bringToFront();
+        }
+    } else {
+        console.error("❌ FinderApp not found!");
+        setTimeout(() => {
+            if (window.FinderApp) {
+                window.FinderApp.open();
+            }
+        }, 100);
+    }
+}
+
         // Visual feedback
         const button = this.dockEl.querySelector(`[data-app="${appId}"]`);
         if (button) {
