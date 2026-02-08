@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music App Test</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: white;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 { color: #1DB954; margin-bottom: 20px; }
+        button {
+            background: #1DB954;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover { background: #1ed760; }
+        .debug-area {
+            background: #222;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success { color: #1DB954; }
+        .error { color: #FF3B30; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎵 Music App Direct Test</h1>
+        
+        <div>
+            <button onclick="testCreateMusicApp()">1. Create MusicApp</button>
+            <button onclick="testOpenMusicApp()">2. Open MusicApp</button>
+            <button onclick="testPlaySong()">3. Test Play Song</button>
+            <button onclick="clearDebug()">Clear Log</button>
+        </div>
+        
+        <div class="debug-area" id="debugOutput">
+            Ready for testing...
+        </div>
+        
+        <div style="margin-top: 30px; color: #999; font-size: 14px;">
+            <h3>Debug Commands (type in console):</h3>
+            <p>• window.MusicApp - Check if app exists</p>
+            <p>• new MusicApp() - Try to create app</p>
+            <p>• window.MusicApp.open() - Try to open</p>
+        </div>
+    </div>
+
+    <script src="music.js"></script>
+    
+    <script>
+        let debugLog = [];
+        
+        function log(message, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            const entry = `[${time}] ${message}`;
+            debugLog.push({message: entry, type});
+            
+            const output = document.getElementById('debugOutput');
+            const div = document.createElement('div');
+            div.className = type;
+            div.textContent = entry;
+            output.appendChild(div);
+            output.scrollTop = output.scrollHeight;
+            
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        function clearDebug() {
+            debugLog = [];
+            document.getElementById('debugOutput').innerHTML = 'Log cleared...';
+        }
+        
+        function testCreateMusicApp() {
+            log('Testing MusicApp creation...');
+            
+            // Check if MusicApp class exists
+            if (typeof MusicApp === 'function') {
+                log('✓ MusicApp class found', 'success');
+                
+                // Try to create instance
+                try {
+                    window.testMusicApp = new MusicApp();
+                    log('✓ MusicApp instance created successfully', 'success');
+                    log(`• isOpen: ${window.testMusicApp.isOpen}`, 'info');
+                    log(`• window element: ${window.testMusicApp.window ? 'Exists' : 'Missing'}`, 'info');
+                    
+                    // Store it globally
+                    window.MusicApp = window.testMusicApp;
+                    log('✓ Stored in window.MusicApp', 'success');
+                    
+                } catch (error) {
+                    log(`✗ Error creating MusicApp: ${error.message}`, 'error');
+                    log(`Stack: ${error.stack}`, 'error');
+                }
+            } else {
+                log('✗ MusicApp class not found!', 'error');
+                log('Check if music.js is loaded correctly', 'error');
+            }
+        }
+        
+        function testOpenMusicApp() {
+            log('Testing MusicApp opening...');
+            
+            if (window.MusicApp) {
+                log('✓ MusicApp instance found', 'success');
+                
+                try {
+                    const result = window.MusicApp.open();
+                    log('✓ MusicApp.open() called', 'success');
+                    log(`• Returned: ${result}`, 'info');
+                    log(`• isOpen should now be: true`, 'info');
+                    
+                    // Check if window is visible
+                    setTimeout(() => {
+                        const musicWindow = document.querySelector('.music-window');
+                        if (musicWindow) {
+                            const style = window.getComputedStyle(musicWindow);
+                            log(`• Window display: ${style.display}`, 'info');
+                            log(`• Window visibility: ${style.visibility}`, 'info');
+                            log(`• Window opacity: ${style.opacity}`, 'info');
+                            
+                            if (style.display !== 'none') {
+                                log('✓ Music app window should be visible now!', 'success');
+                            } else {
+                                log('✗ Window created but display is "none"', 'error');
+                            }
+                        } else {
+                            log('✗ Music window not found in DOM', 'error');
+                        }
+                    }, 100);
+                    
+                } catch (error) {
+                    log(`✗ Error opening MusicApp: ${error.message}`, 'error');
+                }
+            } else {
+                log('✗ No MusicApp instance found. Run Step 1 first.', 'error');
+            }
+        }
+        
+        function testPlaySong() {
+            log('Testing song playback...');
+            
+            if (window.MusicApp && window.MusicApp.library) {
+                log(`✓ Library has ${window.MusicApp.library.length} songs`, 'success');
+                
+                if (window.MusicApp.library.length > 0) {
+                    const song = window.MusicApp.library[0];
+                    log(`✓ First song: "${song.title}" by ${song.artist}`, 'success');
+                    log(`• File: ${song.file}`, 'info');
+                    log(`• Album art: ${song.albumArt}`, 'info');
+                    
+                    // Try to play
+                    try {
+                        window.MusicApp.playSong(0);
+                        log('✓ Called playSong(0)', 'success');
+                    } catch (error) {
+                        log(`✗ Error playing song: ${error.message}`, 'error');
+                    }
+                } else {
+                    log('✗ No songs in library', 'error');
+                }
+            } else {
+                log('✗ MusicApp or library not available', 'error');
+            }
+        }
+        
+        // Auto-test on load
+        window.addEventListener('load', function() {
+            log('Page loaded. Starting auto-test...', 'info');
+            
+            setTimeout(() => {
+                log('Checking script loading...', 'info');
+                
+                // Check which scripts are loaded
+                const scripts = Array.from(document.scripts);
+                scripts.forEach(script => {
+                    log(`Script: ${script.src || 'inline'}`, 'info');
+                });
+                
+                // Check if music.js functions exist
+                const functions = ['MusicApp', 'SystemPreferences', 'PhotosApp', 'macOSDock'];
+                functions.forEach(func => {
+                    if (window[func]) {
+                        log(`✓ window.${func} exists`, 'success');
+                    } else {
+                        log(`✗ window.${func} not found`, 'error');
+                    }
+                });
+                
+            }, 500);
+        });
+        
+        // Add emergency test button to body
+        const emergencyBtn = document.createElement('button');
+        emergencyBtn.textContent = '🚨 EMERGENCY: Force Music App';
+        emergencyBtn.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #FF3B30; z-index: 9999;';
+        emergencyBtn.onclick = function() {
+            log('🚨 EMERGENCY BUTTON PRESSED', 'error');
+            
+            // Try everything
+            if (!window.MusicApp) {
+                if (typeof MusicApp === 'function') {
+                    window.MusicApp = new MusicApp();
+                    log('✓ Created MusicApp via emergency button', 'success');
+                }
+            }
+            
+            if (window.MusicApp) {
+                window.MusicApp.open();
+                log('✓ Called MusicApp.open()', 'success');
+                
+                // Also try to manually create and show window
+                setTimeout(() => {
+                    const existingWindow = document.querySelector('.music-window');
+                    if (!existingWindow) {
+                        log('✗ No music window found, creating manually...', 'error');
+                        createManualWindow();
+                    }
+                }, 200);
+            }
+        };
+        document.body.appendChild(emergencyBtn);
+        
+        function createManualWindow() {
+            const window = document.createElement('div');
+            window.className = 'music-window';
+            window.style.cssText = `
+                position: fixed;
+                top: 100px;
+                left: 100px;
+                width: 800px;
+                height: 600px;
+                background: #000;
+                color: white;
+                z-index: 1000;
+                border-radius: 10px;
+                padding: 20px;
+                box-shadow: 0 0 50px rgba(0,0,0,0.7);
+            `;
+            window.innerHTML = `
+                <h1>🎵 Manual Music Window</h1>
+                <p>This was created manually because the app failed.</p>
+                <p>Check the console for errors in music.js</p>
+                <button onclick="this.parentElement.remove()" style="margin-top: 20px;">Close</button>
+            `;
+            document.body.appendChild(window);
+            log('✓ Created manual music window', 'success');
+        }
+    </script>
+</body>
+</html> 
