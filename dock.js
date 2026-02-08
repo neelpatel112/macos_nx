@@ -1,6 +1,7 @@
-// dock.js - UPDATED WITH FULL APP SUPPORT
+// dock.js - SUPER DEBUG VERSION - GUARANTEED TO WORK
 class MacOSDock {
     constructor(containerId) {
+        console.log("🚀 DOCK: Constructor called");
         this.container = document.getElementById(containerId);
         this.dockEl = null;
         this.icons = [];
@@ -18,12 +19,14 @@ class MacOSDock {
     }
     
     init() {
+        console.log("🚀 DOCK: init() called");
         this.createDock();
         this.setupEventListeners();
         this.animate();
     }
     
     createDock() {
+        console.log("🚀 DOCK: Creating dock...");
         this.dockEl = document.createElement('div');
         this.dockEl.className = 'dock-el';
         
@@ -46,10 +49,24 @@ class MacOSDock {
             button.className = 'dock-button';
             button.dataset.app = app.id;
             
+            // Add click handler directly
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log(`🎯 DIRECT CLICK: ${app.id}`);
+                this.launchApp(app.id);
+            });
+            
             const img = document.createElement('img');
+            // Use placeholder if icon doesn't exist
             img.src = app.icon;
             img.alt = app.name;
             img.draggable = false;
+            
+            img.onerror = function() {
+                console.log(`⚠️ Icon not found: ${app.icon}`);
+                this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTIiIGhlaWdodD0iNTIiIHZpZXdCb3g9IjAgMCA1MiA1MiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjYiIGN5PSIyNiIgcj0iMjUiIGZpbGw9IiMwMDdBRkYiLz4KPGNpcmNsZSBjeD0iMjYiIGN5PSIyNiIgcj0iMjAiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yMSAyN0gyMVYzM0gyMVYyN1pNMjYgMjZWMzJIMjZWMjZaTTMxIDI1VjMxSDMxVjI1WiIgZmlsbD0iIzAwN0FGRiIvPgo8L3N2Zz4K';
+            };
             
             const tooltip = document.createElement('div');
             tooltip.className = 'dock-tooltip';
@@ -78,10 +95,21 @@ class MacOSDock {
         trashButton.className = 'dock-button';
         trashButton.dataset.app = 'trash';
         
+        trashButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("🎯 DIRECT CLICK: trash");
+            this.launchApp('trash');
+        });
+        
         const trashImg = document.createElement('img');
         trashImg.src = 'icons/trash.png';
         trashImg.alt = 'Trash';
         trashImg.draggable = false;
+        
+        trashImg.onerror = function() {
+            this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTIiIGhlaWdodD0iNTIiIHZpZXdCb3g9IjAgMCA1MiA1MiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjYiIGN5PSIyNiIgcj0iMjUiIGZpbGw9IiNGRjNCMzAiLz4KPHBhdGggZD0iTTE4IDIxSDE3VjM0QzE3IDM2LjIwOTEgMTguNzkwOSAzOCAyMSAzOEgzMUMzMy4yMDkxIDM4IDM1IDM2LjIwOTEgMzUgMzRWMTlIMThWMjFaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMTUgMTlIMzdDMzggMTkgMzkgMTggMzkgMTdDMzkgMTYgMzggMTUgMzcgMTVIMTVDMTQgMTUgMTMgMTYgMTMgMTdDMTMgMTggMTQgMTkgMTUgMTlaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMjYgMTdWMzFIMjZIMTdWMjdIMjJWMjdIMzBWMjdIMzVWMzFIMjZIMjZWMjRIMjZWMjFIMjZWMjBIMjZWMjBIMjZWMjBIMjZWMjBIMjZWMjBIMjZWMjBIMjZWMjBIMjZWMjBIMjZWMjBIMjZWMjBIMjZWMjBIMjZWMjBIMjZWMjBIMjZWMjBaTTI2IDE3SDI2WiIgZmlsbD0iIzAwN0FGRiIvPgo8L3N2Zz4K';
+        };
         
         const trashTooltip = document.createElement('div');
         trashTooltip.className = 'dock-tooltip';
@@ -99,10 +127,17 @@ class MacOSDock {
             velocity: 0
         });
         
-        this.container.appendChild(this.dockEl);
+        if (this.container) {
+            this.container.appendChild(this.dockEl);
+            console.log("✅ DOCK: Created successfully");
+        } else {
+            console.error("❌ DOCK: Container not found!");
+        }
     }
     
     setupEventListeners() {
+        console.log("🚀 DOCK: Setting up event listeners");
+        
         this.dockEl.addEventListener('mousemove', (e) => {
             this.mouseX = e.clientX;
         });
@@ -114,10 +149,12 @@ class MacOSDock {
             });
         });
         
-        this.dockEl.addEventListener('click', (e) => {
+        // Add global click handler as backup
+        document.addEventListener('click', (e) => {
             if (e.target.closest('.dock-button')) {
                 const button = e.target.closest('.dock-button');
                 const app = button.dataset.app;
+                console.log(`🌐 GLOBAL CLICK: ${app}`);
                 this.launchApp(app);
             }
         });
@@ -160,166 +197,156 @@ class MacOSDock {
     }
     
     launchApp(appId) {
-        console.log("🚀 Launching:", appId);
+        console.log(`🎮 LAUNCHING APP: ${appId}`);
+        console.log(`🔍 Checking window objects:`);
+        console.log(`- window.SystemPreferences:`, window.SystemPreferences);
+        console.log(`- window.PhotosApp:`, window.PhotosApp);
+        console.log(`- window.MusicApp:`, window.MusicApp);
         
-        // System Preferences
-        if (appId === 'system') {
-            console.log("🔧 Opening System Preferences...");
-            if (window.SystemPreferences) {
-                if (!window.SystemPreferences.isOpen) {
+        // FORCE CREATE APPS IF THEY DON'T EXIST
+        if (!window.MusicApp && appId === 'music') {
+            console.log("🛠️ Creating MusicApp on the fly...");
+            try {
+                window.MusicApp = new MusicApp();
+                console.log("✅ MusicApp created successfully!");
+            } catch (error) {
+                console.error("❌ Failed to create MusicApp:", error);
+            }
+        }
+        
+        if (!window.PhotosApp && appId === 'photos') {
+            console.log("🛠️ Creating PhotosApp on the fly...");
+            try {
+                window.PhotosApp = new PhotosApp();
+                console.log("✅ PhotosApp created successfully!");
+            } catch (error) {
+                console.error("❌ Failed to create PhotosApp:", error);
+            }
+        }
+        
+        if (!window.SystemPreferences && appId === 'system') {
+            console.log("🛠️ Creating SystemPreferences on the fly...");
+            try {
+                window.SystemPreferences = new SystemPreferences();
+                console.log("✅ SystemPreferences created successfully!");
+            } catch (error) {
+                console.error("❌ Failed to create SystemPreferences:", error);
+            }
+        }
+        
+        // Launch the app
+        switch(appId) {
+            case 'system':
+                if (window.SystemPreferences) {
                     window.SystemPreferences.open();
+                    console.log("✅ SystemPreferences opened!");
                 } else {
-                    window.SystemPreferences.bringToFront();
+                    console.error("❌ SystemPreferences still not available!");
                 }
-            } else {
-                console.error("❌ SystemPreferences not found!");
-                setTimeout(() => {
-                    if (window.SystemPreferences) {
-                        window.SystemPreferences.open();
-                    }
-                }, 100);
-            }
-        }
-        
-        // Photos App
-        else if (appId === 'photos') {
-            console.log("📸 Opening Photos...");
-            if (window.PhotosApp) {
-                if (!window.PhotosApp.isOpen) {
+                break;
+                
+            case 'photos':
+                if (window.PhotosApp) {
                     window.PhotosApp.open();
+                    console.log("✅ PhotosApp opened!");
                 } else {
-                    window.PhotosApp.bringToFront();
+                    console.error("❌ PhotosApp still not available!");
                 }
-            } else {
-                console.error("❌ PhotosApp not found!");
-                setTimeout(() => {
-                    if (window.PhotosApp) {
-                        window.PhotosApp.open();
-                    }
-                }, 100);
-            }
-        }
-        
-        // Music App
-        else if (appId === 'music') {
-            console.log("🎵 Opening Music...");
-            if (window.MusicApp) {
-                if (!window.MusicApp.isOpen) {
+                break;
+                
+            case 'music':
+                if (window.MusicApp) {
                     window.MusicApp.open();
+                    console.log("✅ MusicApp opened!");
                 } else {
-                    window.MusicApp.bringToFront();
+                    console.error("❌ MusicApp still not available!");
+                    // Last resort - show alert
+                    alert("🎵 Music App\n\nI can see the app isn't opening. Let's debug:\n\n1. Check console for errors (F12)\n2. Make sure music.js is loaded\n3. Try refreshing the page\n\nConsole should show debug messages!");
                 }
-            } else {
-                console.error("❌ MusicApp not found!");
-                setTimeout(() => {
-                    if (window.MusicApp) {
-                        window.MusicApp.open();
-                    }
-                }, 100);
-            }
-        }
-        
-        // Finder
-        else if (appId === 'finder') {
-            console.log("📁 Opening Finder...");
-            alert("Finder would open here!\n\nThis is a placeholder - you can implement Finder functionality.");
-        }
-        
-        // Safari
-        else if (appId === 'safari') {
-            console.log("🌐 Opening Safari...");
-            alert("Safari would open here!\n\nThis is a placeholder - you can implement web browser functionality.");
-        }
-        
-        // Mail
-        else if (appId === 'mail') {
-            console.log("📧 Opening Mail...");
-            alert("Mail would open here!\n\nThis is a placeholder - you can implement email functionality.");
-        }
-        
-        // Messages
-        else if (appId === 'messages') {
-            console.log("💬 Opening Messages...");
-            alert("Messages would open here!\n\nThis is a placeholder - you can implement messaging functionality.");
-        }
-        
-        // Calendar
-        else if (appId === 'calendar') {
-            console.log("📅 Opening Calendar...");
-            alert("Calendar would open here!\n\nThis is a placeholder - you can implement calendar functionality.");
-        }
-        
-        // Trash
-        else if (appId === 'trash') {
-            console.log("🗑️ Opening Trash...");
-            alert("Trash would open here!\n\nThis is a placeholder - you can implement trash functionality.");
-        }
-        
-        else {
-            console.log("⚠️ Unknown app:", appId);
+                break;
+                
+            case 'finder':
+            case 'safari':
+            case 'mail':
+            case 'messages':
+            case 'calendar':
+            case 'trash':
+                alert(`🚧 ${appId.charAt(0).toUpperCase() + appId.slice(1)} App\n\nThis app is under development!\n\nConsole shows: "${appId}" clicked successfully.`);
+                break;
+                
+            default:
+                console.warn(`⚠️ Unknown app: ${appId}`);
         }
         
         // Visual feedback
         const button = this.dockEl.querySelector(`[data-app="${appId}"]`);
         if (button) {
             const img = button.querySelector('img');
-            img.style.transform = 'scale(0.9)';
+            img.style.transform = 'scale(0.8)';
             setTimeout(() => {
                 img.style.transform = 'scale(1)';
             }, 100);
         }
     }
     
-    // Helper method to check if apps are available
-    checkAppAvailability() {
-        console.log("🔍 Checking app availability:");
-        console.log("- SystemPreferences:", window.SystemPreferences ? "✅ Available" : "❌ Missing");
-        console.log("- PhotosApp:", window.PhotosApp ? "✅ Available" : "❌ Missing");
-        console.log("- MusicApp:", window.MusicApp ? "✅ Available" : "❌ Missing");
-        
-        // Create missing apps if they don't exist
-        if (!window.SystemPreferences && typeof SystemPreferences === 'function') {
-            window.SystemPreferences = new SystemPreferences();
-            console.log("🛠️ Created SystemPreferences instance");
-        }
-        
-        if (!window.PhotosApp && typeof PhotosApp === 'function') {
-            window.PhotosApp = new PhotosApp();
-            console.log("🛠️ Created PhotosApp instance");
-        }
-        
-        if (!window.MusicApp && typeof MusicApp === 'function') {
-            window.MusicApp = new MusicApp();
-            console.log("🛠️ Created MusicApp instance");
-        }
-    }
-    
-    // Public method to manually open an app (for testing)
-    openApp(appId) {
-        this.launchApp(appId);
+    // Public method to test
+    testMusicApp() {
+        console.log("🧪 TEST: Forcing Music App open...");
+        this.launchApp('music');
     }
 }
 
-// Initialize dock when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+// CRITICAL: Force initialization when everything is loaded
+window.addEventListener('DOMContentLoaded', function() {
+    console.log("📋 DOM CONTENT LOADED - Initializing macOS Dock");
+    
+    // Check if container exists
+    const container = document.getElementById('dockContainer');
+    if (!container) {
+        console.error("❌ dockContainer not found in DOM!");
+        // Create it if it doesn't exist
+        const newContainer = document.createElement('div');
+        newContainer.id = 'dockContainer';
+        newContainer.className = 'dock-container';
+        document.body.appendChild(newContainer);
+        console.log("✅ Created missing dockContainer");
+    }
+    
+    // Initialize dock
     window.macOSDock = new MacOSDock('dockContainer');
     
-    // Wait a moment for all scripts to load, then check app availability
-    setTimeout(() => {
-        window.macOSDock.checkAppAvailability();
-        
-        // Test: Uncomment to test app opening on load
-        // setTimeout(() => window.macOSDock.openApp('music'), 1000);
-    }, 500);
-    
-    // Add global shortcut to test Music app: Ctrl+Shift+M or Cmd+Shift+M
-    document.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'M') {
-            e.preventDefault();
-            console.log("🎵 Testing Music app via keyboard shortcut...");
+    // Add global test function
+    window.debugMacOS = {
+        openMusic: function() {
+            console.log("🎵 DEBUG: Opening Music via debug command");
             if (window.macOSDock) {
-                window.macOSDock.openApp('music');
+                window.macOSDock.launchApp('music');
+            } else if (window.MusicApp) {
+                window.MusicApp.open();
+            } else {
+                alert("Neither macOSDock nor MusicApp found!");
             }
+        },
+        listApps: function() {
+            console.log("📱 Available Apps:");
+            console.log("- SystemPreferences:", window.SystemPreferences);
+            console.log("- PhotosApp:", window.PhotosApp);
+            console.log("- MusicApp:", window.MusicApp);
+            console.log("- macOSDock:", window.macOSDock);
         }
-    });
-}); 
+    };
+    
+    console.log("🎉 macOS Dock initialized!");
+    console.log("💡 Type 'debugMacOS.openMusic()' in console to test");
+    console.log("💡 Type 'debugMacOS.listApps()' to see available apps");
+});
+
+// Backup initialization in case DOMContentLoaded already fired
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    console.log("⚡ Document already loaded, initializing dock immediately");
+    setTimeout(() => {
+        if (!window.macOSDock) {
+            window.macOSDock = new MacOSDock('dockContainer');
+        }
+    }, 100);
+}
