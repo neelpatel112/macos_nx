@@ -1,3 +1,4 @@
+// dock.js - FIXED VERSION
 class MacOSDock {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
@@ -159,11 +160,21 @@ class MacOSDock {
     }
     
     launchApp(appId) {
-        console.log("Launching:", appId);
+        console.log("🚀 Launching app:", appId);
+        
+        // Visual feedback
+        const button = this.dockEl.querySelector(`[data-app="${appId}"]`);
+        if (button) {
+            const img = button.querySelector('img');
+            img.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                img.style.transform = 'scale(1)';
+            }, 200);
+        }
         
         // System Preferences
         if (appId === 'system') {
-            console.log("Opening System Preferences...");
+            console.log("⚙️ Opening System Preferences...");
             if (window.SystemPreferences) {
                 if (!window.SystemPreferences.isOpen) {
                     window.SystemPreferences.open();
@@ -171,18 +182,19 @@ class MacOSDock {
                     window.SystemPreferences.bringToFront();
                 }
             } else {
-                console.error("SystemPreferences not found!");
+                console.error("❌ SystemPreferences not found!");
                 setTimeout(() => {
                     if (window.SystemPreferences) {
                         window.SystemPreferences.open();
                     }
-                }, 100);
+                }, 500);
             }
+            return;
         }
         
         // Photos App
         if (appId === 'photos') {
-            console.log("Opening Photos...");
+            console.log("🖼️ Opening Photos...");
             if (window.PhotosApp) {
                 if (!window.PhotosApp.isOpen) {
                     window.PhotosApp.open();
@@ -190,59 +202,77 @@ class MacOSDock {
                     window.PhotosApp.bringToFront();
                 }
             } else {
-                console.error("PhotosApp not found!");
+                console.error("❌ PhotosApp not found!");
                 setTimeout(() => {
                     if (window.PhotosApp) {
                         window.PhotosApp.open();
                     }
-                }, 100);
+                }, 500);
             }
+            return;
         }
 
-  // Music App
-    if (appId === 'music') {
-        console.log("Opening Music...");
-        if (window.MusicApp) {
-            if (!window.MusicApp.isOpen) {
-                window.MusicApp.open();
+        // Music App
+        if (appId === 'music') {
+            console.log("🎵 Opening Music...");
+            if (window.MusicApp) {
+                if (!window.MusicApp.isOpen) {
+                    window.MusicApp.open();
+                } else {
+                    window.MusicApp.bringToFront();
+                }
             } else {
-                window.MusicApp.bringToFront();
+                console.error("❌ MusicApp not found! Check if music.js loaded correctly");
+                // Try to initialize if not loaded
+                if (typeof MusicApp !== 'undefined') {
+                    window.MusicApp = new MusicApp();
+                    setTimeout(() => window.MusicApp.open(), 100);
+                } else {
+                    alert("Music App failed to load. Check console for errors.");
+                }
             }
+            return;
         }
-    }
         
-// Finder App
-if (appId === 'finder') {
-    console.log("📁 Opening Finder...");
-    if (window.FinderApp) {
-        if (!window.FinderApp.isOpen) {
-            window.FinderApp.open();
-        } else {
-            window.FinderApp.bringToFront();
-        }
-    } else {
-        console.error("❌ FinderApp not found!");
-        setTimeout(() => {
+        // Finder App
+        if (appId === 'finder') {
+            console.log("📁 Opening Finder...");
             if (window.FinderApp) {
-                window.FinderApp.open();
+                if (!window.FinderApp.isOpen) {
+                    window.FinderApp.open();
+                } else {
+                    window.FinderApp.bringToFront();
+                }
+            } else {
+                console.error("❌ FinderApp not found! Check if finder.js loaded correctly");
+                // Try to initialize if not loaded
+                if (typeof FinderApp !== 'undefined') {
+                    window.FinderApp = new FinderApp();
+                    setTimeout(() => window.FinderApp.open(), 100);
+                } else {
+                    alert("Finder App failed to load. Check console for errors.");
+                }
             }
-        }, 100);
-    }
-}
+            return;
+        }
 
-        // Visual feedback
-        const button = this.dockEl.querySelector(`[data-app="${appId}"]`);
-        if (button) {
-            const img = button.querySelector('img');
-            img.style.transform = 'scale(0.9)';
-            setTimeout(() => {
-                img.style.transform = 'scale(1)';
-            }, 100);
+        // Safari (placeholder)
+        if (appId === 'safari') {
+            alert('Safari would open here!');
+            return;
+        }
+        
+        // Other apps (placeholder)
+        if (['mail', 'messages', 'calendar', 'trash'].includes(appId)) {
+            alert(`📱 ${appId.charAt(0).toUpperCase() + appId.slice(1)} app would open here!`);
+            return;
         }
     }
 }
 
 // Initialize dock when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🔄 Initializing Dock...');
     window.macOSDock = new MacOSDock('dockContainer');
-});
+    console.log('✅ Dock initialized');
+}); 

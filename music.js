@@ -1,4 +1,4 @@
-// music.js - UPDATED WITH YOUR EXACT LOCAL FILES
+// music.js - FIXED VERSION WITH PROPER FILE PATHS
 class MusicApp {
     constructor() {
         this.window = null;
@@ -11,11 +11,10 @@ class MusicApp {
         this.volume = 0.7;
         this.currentSongIndex = 0;
         this.shuffle = false;
-        this.repeat = 'none'; // none, one, all
+        this.repeat = 'none';
         this.visualizer = null;
         this.visualizerType = 'bars';
         
-        // Your exact music library with local files
         this.library = this.createMusicLibrary();
         this.playlists = {
             'favorites': { name: 'Favorites', songs: [] },
@@ -28,7 +27,7 @@ class MusicApp {
     }
     
     createMusicLibrary() {
-        // YOUR EXACT MUSIC FILES WITH ALBUM ART
+        // FIXED: Using encodeURIComponent for file paths with spaces
         return [
             {
                 id: 1,
@@ -36,12 +35,12 @@ class MusicApp {
                 artist: 'Kanye West',
                 album: 'Jesus is King',
                 duration: '3:23',
-                file: 'music/God is.mp3',
+                file: 'music/God%20is.mp3', // URL encoded
                 albumArt: 'album-art/69.jpg',
                 genre: 'Gospel Rap',
                 year: 2019,
                 favorite: true,
-                color: '#FFD700' // Gold
+                color: '#FFD700'
             },
             {
                 id: 2,
@@ -49,12 +48,12 @@ class MusicApp {
                 artist: 'The Weeknd',
                 album: 'Dawn FM',
                 duration: '3:34',
-                file: 'music/Out of time.mp3',
+                file: 'music/Out%20of%20time.mp3', // URL encoded
                 albumArt: 'album-art/88.jpg',
                 genre: 'Synthwave',
                 year: 2022,
                 favorite: true,
-                color: '#00BFFF' // Deep Sky Blue
+                color: '#00BFFF'
             },
             {
                 id: 3,
@@ -62,12 +61,12 @@ class MusicApp {
                 artist: 'Drake ft. Jhené Aiko',
                 album: 'Nothing Was The Same',
                 duration: '5:22',
-                file: 'music/From time.mp3',
+                file: 'music/From%20time.mp3', // URL encoded
                 albumArt: 'album-art/55.jpg',
                 genre: 'R&B',
                 year: 2013,
                 favorite: false,
-                color: '#8B0000' // Dark Red
+                color: '#8B0000'
             },
             {
                 id: 4,
@@ -75,12 +74,12 @@ class MusicApp {
                 artist: 'Bob Marley & The Wailers',
                 album: 'Kaya',
                 duration: '3:52',
-                file: 'music/Is this love.mp3',
+                file: 'music/Is%20this%20love.mp3', // URL encoded
                 albumArt: 'album-art/66.jpg',
                 genre: 'Reggae',
                 year: 1978,
                 favorite: true,
-                color: '#FF4500' // Orange Red
+                color: '#FF4500'
             },
             {
                 id: 5,
@@ -88,12 +87,12 @@ class MusicApp {
                 artist: 'Jay-Z ft. Alicia Keys',
                 album: 'The Blueprint 3',
                 duration: '4:36',
-                file: 'music/Empire state of mind.mp3',
+                file: 'music/Empire%20state%20of%20mind.mp3', // URL encoded
                 albumArt: 'album-art/77.jpg',
                 genre: 'Hip Hop',
                 year: 2009,
                 favorite: true,
-                color: '#0000FF' // Blue
+                color: '#0000FF'
             }
         ];
     }
@@ -102,8 +101,8 @@ class MusicApp {
         this.createWindow();
         this.setupAudioPlayer();
         this.setupEventListeners();
-        this.loadLibrary();
-        console.log('🎵 Music App initialized with YOUR LOCAL SONGS');
+        this.loadSongsList();
+        console.log('🎵 Music App initialized with', this.library.length, 'songs');
     }
     
     createWindow() {
@@ -136,7 +135,6 @@ class MusicApp {
             </div>
             
             <div class="music-container">
-                <!-- Sidebar -->
                 <div class="music-sidebar">
                     <div class="music-logo">
                         <h2>♪ Music</h2>
@@ -205,9 +203,7 @@ class MusicApp {
                     </div>
                 </div>
                 
-                <!-- Main Content -->
                 <div class="music-main">
-                    <!-- Library View -->
                     <div class="library-view" id="libraryView">
                         <div class="library-header">
                             <h1 class="library-title">Your Music Library</h1>
@@ -242,18 +238,15 @@ class MusicApp {
                                 <div style="text-align: center;">Time</div>
                             </div>
                             
-                            <div id="songsContainer">
-                                <!-- Songs will be loaded here -->
-                            </div>
+                            <div id="songsContainer"></div>
                         </div>
                     </div>
                     
-                    <!-- Now Playing View -->
                     <div class="now-playing-view" id="nowPlayingView">
                         <div class="now-playing-art">
                             <div class="album-art-large" id="albumArtLarge">
                                 <img src="" alt="Album Art" id="largeAlbumArt" 
-                                     onerror="this.src='https://via.placeholder.com/300/333/fff?text=♪'; this.onerror=null;">
+                                     onerror="this.src='album-art/default.jpg'; this.onerror=null;">
                                 <div class="visualizer-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; height: 60px; background: linear-gradient(transparent, rgba(0,0,0,0.7));"></div>
                             </div>
                             
@@ -284,7 +277,6 @@ class MusicApp {
                         </div>
                     </div>
                     
-                    <!-- Queue Sidebar -->
                     <div class="queue-view" id="queueView">
                         <div class="queue-header">
                             <h3 class="queue-title">Queue</h3>
@@ -296,7 +288,6 @@ class MusicApp {
                         </div>
                         
                         <div id="queueContainer">
-                            <!-- Queue items will be loaded here -->
                             <div style="text-align: center; color: #666; padding: 40px 20px;">
                                 <i class="fas fa-list" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
                                 <p>Queue is empty</p>
@@ -307,12 +298,11 @@ class MusicApp {
                 </div>
             </div>
             
-            <!-- Now Playing Bar (Always visible) -->
             <div class="now-playing-bar">
                 <div class="now-playing-info">
                     <div class="album-art-small">
                         <img src="" alt="Album Art" id="smallAlbumArt" 
-                             onerror="this.src='https://via.placeholder.com/56/333/fff?text=♪'; this.onerror=null;">
+                             onerror="this.src='album-art/default.jpg'; this.onerror=null;">
                     </div>
                     
                     <div class="track-info">
@@ -384,15 +374,12 @@ class MusicApp {
         this.audioPlayer.volume = this.volume;
         this.audioPlayer.preload = 'metadata';
         
-        // Time update event
         this.audioPlayer.addEventListener('timeupdate', () => {
             this.currentTime = this.audioPlayer.currentTime;
             this.duration = this.audioPlayer.duration || 0;
             this.updateProgress();
-            this.updateVisualizer();
         });
         
-        // Play/pause events
         this.audioPlayer.addEventListener('play', () => {
             this.isPlaying = true;
             this.updatePlayButton();
@@ -404,86 +391,75 @@ class MusicApp {
             this.updatePlayButton();
         });
         
-        // Ended event
         this.audioPlayer.addEventListener('ended', () => {
             this.nextSong();
         });
         
-        // Loaded metadata
         this.audioPlayer.addEventListener('loadedmetadata', () => {
             this.duration = this.audioPlayer.duration;
             this.updateTimeDisplay();
         });
         
-        // Error handling
         this.audioPlayer.addEventListener('error', (e) => {
             console.error('Audio error:', e);
             const currentSong = this.library[this.currentSongIndex];
-            alert(`Error loading: ${currentSong.file}\n\nMake sure the file exists at: ${currentSong.file}`);
+            if (currentSong) {
+                console.log('Failed to load:', currentSong.file);
+            }
         });
     }
     
     setupEventListeners() {
-        // Window controls
-        this.window.querySelector('.window-close').addEventListener('click', () => this.close());
-        this.window.querySelector('.window-minimize').addEventListener('click', () => this.minimize());
-        this.window.querySelector('.window-zoom').addEventListener('click', () => this.zoom());
+        this.window.querySelector('.window-close')?.addEventListener('click', () => this.close());
+        this.window.querySelector('.window-minimize')?.addEventListener('click', () => this.minimize());
+        this.window.querySelector('.window-zoom')?.addEventListener('click', () => this.zoom());
         
-        // Navigation
         this.window.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 const view = e.currentTarget.dataset.view;
-                if (view) {
-                    this.switchView(view);
-                }
+                if (view) this.switchView(view);
             });
         });
         
-        // Playlist items
         this.window.querySelectorAll('.playlist-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 const playlist = e.currentTarget.dataset.playlist;
-                if (playlist) {
-                    this.showPlaylist(playlist);
-                }
+                if (playlist) this.showPlaylist(playlist);
             });
         });
         
-        // Player controls
-        this.window.querySelector('#playPauseBtn').addEventListener('click', () => this.togglePlay());
-        this.window.querySelector('#prevBtn').addEventListener('click', () => this.prevSong());
-        this.window.querySelector('#nextBtn').addEventListener('click', () => this.nextSong());
-        this.window.querySelector('#shuffleBtn').addEventListener('click', () => this.toggleShuffle());
-        this.window.querySelector('#repeatBtn').addEventListener('click', () => this.toggleRepeat());
-        this.window.querySelector('#likeBtn').addEventListener('click', () => this.toggleLike());
+        this.window.querySelector('#playPauseBtn')?.addEventListener('click', () => this.togglePlay());
+        this.window.querySelector('#prevBtn')?.addEventListener('click', () => this.prevSong());
+        this.window.querySelector('#nextBtn')?.addEventListener('click', () => this.nextSong());
+        this.window.querySelector('#shuffleBtn')?.addEventListener('click', () => this.toggleShuffle());
+        this.window.querySelector('#repeatBtn')?.addEventListener('click', () => this.toggleRepeat());
+        this.window.querySelector('#likeBtn')?.addEventListener('click', () => this.toggleLike());
         
-        // Progress bar
         const progressBar = this.window.querySelector('#progressBar');
-        progressBar.addEventListener('click', (e) => {
-            const rect = progressBar.getBoundingClientRect();
-            const percent = (e.clientX - rect.left) / rect.width;
-            this.seekTo(percent);
-        });
+        if (progressBar) {
+            progressBar.addEventListener('click', (e) => {
+                const rect = progressBar.getBoundingClientRect();
+                const percent = (e.clientX - rect.left) / rect.width;
+                this.seekTo(percent);
+            });
+        }
         
-        // Volume control
         const volumeSlider = this.window.querySelector('#volumeSlider');
-        volumeSlider.addEventListener('input', (e) => {
-            this.volume = parseFloat(e.target.value);
-            this.audioPlayer.volume = this.volume;
-        });
+        if (volumeSlider) {
+            volumeSlider.addEventListener('input', (e) => {
+                this.volume = parseFloat(e.target.value);
+                this.audioPlayer.volume = this.volume;
+            });
+        }
         
-        // Queue toggle
-        this.window.querySelector('#queueToggleBtn').addEventListener('click', () => this.toggleQueue());
+        this.window.querySelector('#queueToggleBtn')?.addEventListener('click', () => this.toggleQueue());
+        this.window.querySelector('#playAllBtn')?.addEventListener('click', () => this.playAll());
+        this.window.querySelector('#shuffleAllBtn')?.addEventListener('click', () => this.shuffleAll());
+        this.window.querySelector('#queueAllBtn')?.addEventListener('click', () => this.queueAll());
+        this.window.querySelector('#clearQueueBtn')?.addEventListener('click', () => this.clearQueue());
+        this.window.querySelector('#importMoreBtn')?.addEventListener('click', () => this.importMoreMusic());
+        this.window.querySelector('#fileInfoBtn')?.addEventListener('click', () => this.showFileInfo());
         
-        // Library buttons
-        this.window.querySelector('#playAllBtn').addEventListener('click', () => this.playAll());
-        this.window.querySelector('#shuffleAllBtn').addEventListener('click', () => this.shuffleAll());
-        this.window.querySelector('#queueAllBtn').addEventListener('click', () => this.queueAll());
-        this.window.querySelector('#clearQueueBtn').addEventListener('click', () => this.clearQueue());
-        this.window.querySelector('#importMoreBtn').addEventListener('click', () => this.importMoreMusic());
-        this.window.querySelector('#fileInfoBtn').addEventListener('click', () => this.showFileInfo());
-        
-        // Visualizer buttons
         this.window.querySelectorAll('.visualizer-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const type = e.currentTarget.dataset.visualizer;
@@ -491,13 +467,7 @@ class MusicApp {
             });
         });
         
-        // Initialize visualizer
-        this.initVisualizer();
-        
-        // Global keyboard shortcuts
         this.setupKeyboardShortcuts();
-        
-        // Make window draggable
         this.makeDraggable();
     }
     
@@ -516,28 +486,8 @@ class MusicApp {
                 case 'ArrowLeft':
                     if (e.ctrlKey) this.prevSong();
                     break;
-                case 'ArrowUp':
-                    if (e.ctrlKey) this.changeVolume(0.1);
-                    break;
-                case 'ArrowDown':
-                    if (e.ctrlKey) this.changeVolume(-0.1);
-                    break;
-                case 'l':
-                case 'L':
-                    if (e.ctrlKey) this.toggleLike();
-                    break;
-                case 's':
-                case 'S':
-                    if (e.ctrlKey) this.toggleShuffle();
-                    break;
             }
         });
-    }
-    
-    changeVolume(delta) {
-        this.volume = Math.max(0, Math.min(1, this.volume + delta));
-        this.audioPlayer.volume = this.volume;
-        this.window.querySelector('#volumeSlider').value = this.volume;
     }
     
     loadSongsList() {
@@ -562,7 +512,7 @@ class MusicApp {
                 <div class="song-title">
                     <div class="song-album-art">
                         <img src="${song.albumArt}" alt="${song.album}" 
-                             onerror="this.src='https://via.placeholder.com/40/333/fff?text=♪'; this.onerror=null;">
+                             onerror="this.src='album-art/default.jpg'; this.onerror=null;">
                     </div>
                     <div>
                         <h4 class="song-name">${song.title}</h4>
@@ -582,19 +532,16 @@ class MusicApp {
                 </div>
             `;
             
-            // Play button
-            songElement.querySelector('[data-action="play"]').addEventListener('click', (e) => {
+            songElement.querySelector('[data-action="play"]')?.addEventListener('click', (e) => {
                 e.stopPropagation();
                 this.playSong(index);
             });
             
-            // Queue button
-            songElement.querySelector('[data-action="queue"]').addEventListener('click', (e) => {
+            songElement.querySelector('[data-action="queue"]')?.addEventListener('click', (e) => {
                 e.stopPropagation();
                 this.addToQueue(song);
             });
             
-            // Click to play
             songElement.addEventListener('click', (e) => {
                 if (!e.target.closest('.action-btn')) {
                     this.playSong(index);
@@ -605,136 +552,59 @@ class MusicApp {
         });
     }
     
-    loadQueue() {
-        const container = this.window.querySelector('#queueContainer');
-        const queueCount = this.window.querySelector('#queueCount');
-        const nextSongInfo = this.window.querySelector('#nextSongInfo');
-        
-        if (!container) return;
-        
-        // Update queue count
-        queueCount.textContent = this.queue.length > 0 ? this.queue.length : '';
-        queueCount.style.display = this.queue.length > 0 ? 'inline' : 'none';
-        
-        if (this.queue.length === 0) {
-            container.innerHTML = `
-                <div style="text-align: center; color: #666; padding: 40px 20px;">
-                    <i class="fas fa-list" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
-                    <p>Queue is empty</p>
-                    <p style="font-size: 12px; margin-top: 5px;">Add songs from your library</p>
-                </div>
-            `;
-            nextSongInfo.textContent = 'None';
-            return;
-        }
-        
-        container.innerHTML = '';
-        nextSongInfo.textContent = this.queue[0].title;
-        
-        this.queue.forEach((song, index) => {
-            const isCurrent = index === 0 && this.isPlaying;
-            
-            const queueItem = document.createElement('div');
-            queueItem.className = `queue-item ${isCurrent ? 'playing' : ''}`;
-            
-            queueItem.innerHTML = `
-                <div class="queue-art">
-                    <img src="${song.albumArt}" alt="${song.album}" 
-                         onerror="this.src='https://via.placeholder.com/40/333/fff?text=♪'; this.onerror=null;">
-                </div>
-                <div class="queue-info">
-                    <h4 class="queue-song">${song.title}</h4>
-                    <p class="queue-artist">${song.artist} • ${song.duration}</p>
-                </div>
-                <button class="action-btn" data-action="remove" title="Remove">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            
-            // Play on click
-            queueItem.addEventListener('click', (e) => {
-                if (!e.target.closest('.action-btn')) {
-                    this.playFromQueue(index);
-                }
-            });
-            
-            // Remove button
-            queueItem.querySelector('[data-action="remove"]').addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.removeFromQueue(index);
-            });
-            
-            container.appendChild(queueItem);
-        });
-    }
-    
     playSong(index) {
         if (index < 0 || index >= this.library.length) return;
         
         this.currentSongIndex = index;
         const song = this.library[index];
         
-        console.log('🎵 Attempting to play:', song.file);
+        console.log('🎵 Playing:', song.title, 'from:', song.file);
         
-        // Try to play local file
         this.audioPlayer.src = song.file;
         this.audioPlayer.play().catch(e => {
             console.error('Play failed:', e);
-            alert(`Could not play: ${song.file}\n\nError: ${e.message}\n\nMake sure the file exists at: music/${song.file.split('/').pop()}`);
+            alert(`Could not play: ${song.title}\n\nMake sure the file exists at: ${song.file}`);
         });
         
-        // Update UI
         this.updateNowPlaying(song);
         this.updatePlayButton();
         
-        // Highlight current song
         this.window.querySelectorAll('.song-item').forEach((item, i) => {
             item.classList.toggle('playing', i === index && this.isPlaying);
         });
-        
-        console.log('🎵 Now playing:', song.title, 'by', song.artist);
     }
     
     updateNowPlaying(song) {
-        // Update now playing bar
-        this.window.querySelector('#trackTitle').textContent = song.title;
-        this.window.querySelector('#trackArtist').textContent = song.artist;
+        const trackTitle = this.window.querySelector('#trackTitle');
+        const trackArtist = this.window.querySelector('#trackArtist');
         const smallArt = this.window.querySelector('#smallAlbumArt');
-        smallArt.src = song.albumArt;
-        smallArt.onerror = function() {
-            this.src = 'https://via.placeholder.com/56/333/fff?text=♪';
-            this.onerror = null;
-        };
-        
-        // Update now playing view
-        this.window.querySelector('#nowPlayingTitle').textContent = song.title;
-        this.window.querySelector('#nowPlayingDetails').textContent = 
-            `${song.artist} • ${song.album} • ${song.year}`;
-        
+        const nowPlayingTitle = this.window.querySelector('#nowPlayingTitle');
+        const nowPlayingDetails = this.window.querySelector('#nowPlayingDetails');
         const largeArt = this.window.querySelector('#largeAlbumArt');
-        largeArt.src = song.albumArt;
-        largeArt.onerror = function() {
-            this.src = 'https://via.placeholder.com/300/333/fff?text=♪';
-            this.onerror = null;
-        };
-        
-        // Update genre and year tags
-        this.window.querySelector('#genreTag').textContent = song.genre;
-        this.window.querySelector('#genreTag').style.background = song.color || '#333';
-        this.window.querySelector('#yearTag').textContent = song.year;
-        
-        // Update like button
+        const genreTag = this.window.querySelector('#genreTag');
+        const yearTag = this.window.querySelector('#yearTag');
         const likeBtn = this.window.querySelector('#likeBtn i');
-        likeBtn.className = song.favorite ? 'fas fa-heart' : 'far fa-heart';
-        likeBtn.style.color = song.favorite ? '#FF3B30' : '';
-        likeBtn.title = song.favorite ? 'Remove from Favorites' : 'Add to Favorites';
+        
+        if (trackTitle) trackTitle.textContent = song.title;
+        if (trackArtist) trackArtist.textContent = song.artist;
+        if (smallArt) smallArt.src = song.albumArt;
+        if (nowPlayingTitle) nowPlayingTitle.textContent = song.title;
+        if (nowPlayingDetails) nowPlayingDetails.textContent = `${song.artist} • ${song.album} • ${song.year}`;
+        if (largeArt) largeArt.src = song.albumArt;
+        if (genreTag) {
+            genreTag.textContent = song.genre;
+            genreTag.style.background = song.color || '#333';
+        }
+        if (yearTag) yearTag.textContent = song.year;
+        if (likeBtn) {
+            likeBtn.className = song.favorite ? 'fas fa-heart' : 'far fa-heart';
+            likeBtn.style.color = song.favorite ? '#FF3B30' : '';
+        }
     }
     
     updateNowPlayingUI() {
         const currentSong = this.library[this.currentSongIndex];
-        if (currentSong) {
-            this.updateNowPlaying(currentSong);
-        }
+        if (currentSong) this.updateNowPlaying(currentSong);
     }
     
     togglePlay() {
@@ -745,17 +615,16 @@ class MusicApp {
                 this.audioPlayer.play();
             }
         } else {
-            // If nothing is playing, play first song
             if (this.library.length > 0) {
                 this.playSong(0);
-            } else {
-                alert('No songs in library! Add music files to the music/ folder.');
             }
         }
     }
     
     updatePlayButton() {
         const btn = this.window.querySelector('#playPauseBtn');
+        if (!btn) return;
+        
         const icon = btn.querySelector('i');
         
         if (this.isPlaying) {
@@ -786,11 +655,9 @@ class MusicApp {
         } else {
             const nextIndex = (this.currentSongIndex + 1) % this.library.length;
             if (nextIndex === 0 && this.repeat === 'none') {
-                // Stop at end of playlist
                 this.audioPlayer.pause();
                 this.isPlaying = false;
                 this.updatePlayButton();
-                alert('🎵 Playback finished\n\nAll songs have been played!');
             } else {
                 this.playSong(nextIndex);
             }
@@ -800,9 +667,10 @@ class MusicApp {
     toggleShuffle() {
         this.shuffle = !this.shuffle;
         const btn = this.window.querySelector('#shuffleBtn');
-        btn.style.color = this.shuffle ? '#1DB954' : '';
-        btn.title = `Shuffle: ${this.shuffle ? 'ON' : 'OFF'}`;
-        console.log('Shuffle:', this.shuffle ? 'ON' : 'OFF');
+        if (btn) {
+            btn.style.color = this.shuffle ? '#1DB954' : '';
+            btn.title = `Shuffle: ${this.shuffle ? 'ON' : 'OFF'}`;
+        }
     }
     
     toggleRepeat() {
@@ -811,6 +679,8 @@ class MusicApp {
         this.repeat = modes[(currentIndex + 1) % modes.length];
         
         const btn = this.window.querySelector('#repeatBtn');
+        if (!btn) return;
+        
         btn.style.color = this.repeat !== 'none' ? '#1DB954' : '';
         btn.title = `Repeat: ${this.repeat}`;
         
@@ -819,8 +689,6 @@ class MusicApp {
         } else {
             btn.innerHTML = '<i class="fas fa-redo"></i>';
         }
-        
-        console.log('Repeat:', this.repeat);
     }
     
     toggleLike() {
@@ -829,14 +697,12 @@ class MusicApp {
             song.favorite = !song.favorite;
             this.updateNowPlaying(song);
             
-            // Update favorites count
-            const favCount = this.library.filter(s => s.favorite).length;
-            this.window.querySelector('[data-playlist="favorites"] .playlist-count').textContent = favCount;
+            const favCount = this.window.querySelector('[data-playlist="favorites"] .playlist-count');
+            if (favCount) {
+                favCount.textContent = this.library.filter(s => s.favorite).length;
+            }
             
-            // Update song in list
             this.loadSongsList();
-            
-            console.log(song.favorite ? '❤️ Added to favorites' : '💔 Removed from favorites');
         }
     }
     
@@ -845,7 +711,7 @@ class MusicApp {
         const currentTime = this.window.querySelector('#timeCurrent');
         const totalTime = this.window.querySelector('#timeTotal');
         
-        if (this.duration > 0) {
+        if (this.duration > 0 && progress && currentTime && totalTime) {
             const percent = (this.currentTime / this.duration) * 100;
             progress.style.width = `${percent}%`;
             
@@ -855,7 +721,10 @@ class MusicApp {
     }
     
     updateTimeDisplay() {
-        this.window.querySelector('#timeTotal').textContent = this.formatTime(this.duration);
+        const totalTime = this.window.querySelector('#timeTotal');
+        if (totalTime) {
+            totalTime.textContent = this.formatTime(this.duration);
+        }
     }
     
     seekTo(percent) {
@@ -866,14 +735,12 @@ class MusicApp {
     
     formatTime(seconds) {
         if (isNaN(seconds)) return '0:00';
-        
         const mins = Math.floor(seconds / 60);
         const secs = Math.floor(seconds % 60);
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
     
     formatTotalDuration() {
-        // Calculate total duration (approx 4min per song)
         const totalMinutes = this.library.length * 4;
         if (totalMinutes < 60) {
             return `${totalMinutes} min`;
@@ -884,184 +751,100 @@ class MusicApp {
         }
     }
     
-    // Visualizer
-    initVisualizer() {
-        const canvas = this.window.querySelector('#visualizerCanvas');
-        if (!canvas) return;
-        
-        this.visualizer = {
-            canvas: canvas,
-            ctx: canvas.getContext('2d'),
-            audioContext: null,
-            analyser: null,
-            dataArray: null,
-            bufferLength: null
-        };
-        
-        // Create audio context for visualization
-        try {
-            this.visualizer.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            this.visualizer.analyser = this.visualizer.audioContext.createAnalyser();
-            this.visualizer.analyser.fftSize = 256;
-            this.visualizer.bufferLength = this.visualizer.analyser.frequencyBinCount;
-            this.visualizer.dataArray = new Uint8Array(this.visualizer.bufferLength);
-            
-            // Connect audio element to analyser
-            const source = this.visualizer.audioContext.createMediaElementSource(this.audioPlayer);
-            source.connect(this.visualizer.analyser);
-            this.visualizer.analyser.connect(this.visualizer.audioContext.destination);
-        } catch (e) {
-            console.log('Audio context not supported for visualization');
-            this.visualizer = null;
+    toggleQueue() {
+        const queueView = this.window.querySelector('#queueView');
+        if (queueView) {
+            queueView.classList.toggle('active');
+            this.loadQueue();
         }
-        
-        // Start animation loop
-        this.animateVisualizer();
     }
     
-    animateVisualizer() {
-        if (!this.visualizer || !this.isPlaying) {
-            requestAnimationFrame(() => this.animateVisualizer());
+    loadQueue() {
+        const container = this.window.querySelector('#queueContainer');
+        const queueCount = this.window.querySelector('#queueCount');
+        const nextSongInfo = this.window.querySelector('#nextSongInfo');
+        
+        if (!container) return;
+        
+        if (queueCount) {
+            queueCount.textContent = this.queue.length > 0 ? this.queue.length : '';
+            queueCount.style.display = this.queue.length > 0 ? 'inline' : 'none';
+        }
+        
+        if (nextSongInfo) {
+            nextSongInfo.textContent = this.queue.length > 0 ? this.queue[0].title : 'None';
+        }
+        
+        if (this.queue.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; color: #666; padding: 40px 20px;">
+                    <i class="fas fa-list" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+                    <p>Queue is empty</p>
+                    <p style="font-size: 12px; margin-top: 5px;">Add songs from your library</p>
+                </div>
+            `;
             return;
         }
         
-        const { canvas, ctx, analyser, dataArray, bufferLength } = this.visualizer;
-        const width = canvas.width;
-        const height = canvas.height;
+        container.innerHTML = '';
         
-        // Clear canvas
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-        ctx.fillRect(0, 0, width, height);
-        
-        // Get frequency data
-        analyser.getByteFrequencyData(dataArray);
-        
-        // Draw based on visualizer type
-        switch (this.visualizerType) {
-            case 'bars':
-                this.drawBars(ctx, dataArray, bufferLength, width, height);
-                break;
-            case 'wave':
-                this.drawWave(ctx, dataArray, bufferLength, width, height);
-                break;
-            case 'circle':
-                this.drawCircle(ctx, dataArray, bufferLength, width, height);
-                break;
-        }
-        
-        requestAnimationFrame(() => this.animateVisualizer());
-    }
-    
-    drawBars(ctx, dataArray, bufferLength, width, height) {
-        const currentSong = this.library[this.currentSongIndex];
-        const barWidth = (width / bufferLength) * 2.5;
-        let barHeight;
-        let x = 0;
-        
-        // Use song's color or default green
-        const color = currentSong?.color || '#1DB954';
-        
-        for (let i = 0; i < bufferLength; i++) {
-            barHeight = (dataArray[i] / 255) * height;
+        this.queue.forEach((song, index) => {
+            const isCurrent = index === 0 && this.isPlaying;
             
-            // Create gradient using song's color
-            const gradient = ctx.createLinearGradient(0, height - barHeight, 0, height);
-            gradient.addColorStop(0, color);
-            gradient.addColorStop(1, this.lightenColor(color, 30));
+            const queueItem = document.createElement('div');
+            queueItem.className = `queue-item ${isCurrent ? 'playing' : ''}`;
             
-            ctx.fillStyle = gradient;
-            ctx.fillRect(x, height - barHeight, barWidth - 1, barHeight);
+            queueItem.innerHTML = `
+                <div class="queue-art">
+                    <img src="${song.albumArt}" alt="${song.album}" 
+                         onerror="this.src='album-art/default.jpg'; this.onerror=null;">
+                </div>
+                <div class="queue-info">
+                    <h4 class="queue-song">${song.title}</h4>
+                    <p class="queue-artist">${song.artist} • ${song.duration}</p>
+                </div>
+                <button class="action-btn" data-action="remove" title="Remove">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
             
-            x += barWidth + 1;
-        }
-    }
-    
-    lightenColor(color, percent) {
-        const num = parseInt(color.replace("#", ""), 16);
-        const amt = Math.round(2.55 * percent);
-        const R = (num >> 16) + amt;
-        const G = (num >> 8 & 0x00FF) + amt;
-        const B = (num & 0x0000FF) + amt;
-        return `#${(0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
-            (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
-            (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1)}`;
-    }
-    
-    drawWave(ctx, dataArray, bufferLength, width, height) {
-        const currentSong = this.library[this.currentSongIndex];
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = currentSong?.color || '#1DB954';
-        ctx.beginPath();
-        
-        const sliceWidth = width / bufferLength;
-        let x = 0;
-        
-        for (let i = 0; i < bufferLength; i++) {
-            const v = dataArray[i] / 128.0;
-            const y = (v * height) / 2;
+            queueItem.addEventListener('click', (e) => {
+                if (!e.target.closest('.action-btn')) {
+                    this.playFromQueue(index);
+                }
+            });
             
-            if (i === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
+            queueItem.querySelector('[data-action="remove"]')?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.removeFromQueue(index);
+            });
             
-            x += sliceWidth;
-        }
-        
-        ctx.lineTo(width, height / 2);
-        ctx.stroke();
-    }
-    
-    drawCircle(ctx, dataArray, bufferLength, width, height) {
-        const currentSong = this.library[this.currentSongIndex];
-        const centerX = width / 2;
-        const centerY = height / 2;
-        const radius = Math.min(width, height) / 4;
-        
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = currentSong?.color || '#1DB954';
-        ctx.beginPath();
-        
-        for (let i = 0; i < bufferLength; i++) {
-            const amplitude = dataArray[i] / 255;
-            const angle = (i * 2 * Math.PI) / bufferLength;
-            const pointRadius = radius + amplitude * 50;
-            
-            const x = centerX + Math.cos(angle) * pointRadius;
-            const y = centerY + Math.sin(angle) * pointRadius;
-            
-            if (i === 0) {
-                ctx.moveTo(x, y);
-            } else {
-                ctx.lineTo(x, y);
-            }
-        }
-        
-        ctx.closePath();
-        ctx.stroke();
-    }
-    
-    setVisualizerType(type) {
-        this.visualizerType = type;
-        
-        // Update button states
-        this.window.querySelectorAll('.visualizer-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.visualizer === type);
+            container.appendChild(queueItem);
         });
-    }
-    
-    // Queue management
-    toggleQueue() {
-        const queueView = this.window.querySelector('#queueView');
-        queueView.classList.toggle('active');
-        this.loadQueue();
     }
     
     addToQueue(song) {
         this.queue.push(song);
         this.loadQueue();
-        console.log('➕ Added to queue:', song.title);
+    }
+    
+    playFromQueue(index) {
+        if (index >= 0 && index < this.queue.length) {
+            const song = this.queue[index];
+            const libraryIndex = this.library.findIndex(s => s.id === song.id);
+            if (libraryIndex !== -1) {
+                this.playSong(libraryIndex);
+            }
+            this.queue.splice(index, 1);
+            this.loadQueue();
+        }
+    }
+    
+    removeFromQueue(index) {
+        if (index >= 0 && index < this.queue.length) {
+            this.queue.splice(index, 1);
+            this.loadQueue();
+        }
     }
     
     playAll() {
@@ -1082,40 +865,14 @@ class MusicApp {
         this.toggleQueue();
     }
     
-    playFromQueue(index) {
-        if (index >= 0 && index < this.queue.length) {
-            const song = this.queue[index];
-            const libraryIndex = this.library.findIndex(s => s.id === song.id);
-            if (libraryIndex !== -1) {
-                this.playSong(libraryIndex);
-            }
-            // Remove played song from queue
-            this.queue.splice(index, 1);
-            this.loadQueue();
-        }
-    }
-    
-    removeFromQueue(index) {
-        if (index >= 0 && index < this.queue.length) {
-            const removed = this.queue.splice(index, 1);
-            this.loadQueue();
-            console.log('🗑️ Removed from queue:', removed[0].title);
-        }
-    }
-    
     clearQueue() {
-        if (this.queue.length > 0) {
-            this.queue = [];
-            this.loadQueue();
-            console.log('🧹 Cleared queue');
-        }
+        this.queue = [];
+        this.loadQueue();
     }
     
-    // View management
     switchView(view) {
         this.currentView = view;
         
-        // Update active nav item
         this.window.querySelectorAll('.nav-item').forEach(item => {
             item.classList.remove('active');
             if (item.dataset.view === view) {
@@ -1123,17 +880,18 @@ class MusicApp {
             }
         });
         
-        // Show/hide views
         const libraryView = this.window.querySelector('#libraryView');
         const nowPlayingView = this.window.querySelector('#nowPlayingView');
         
-        if (view === 'library') {
-            libraryView.style.display = 'block';
-            nowPlayingView.style.display = 'none';
-        } else if (view === 'now-playing') {
-            libraryView.style.display = 'none';
-            nowPlayingView.style.display = 'flex';
-            this.updateNowPlayingUI();
+        if (libraryView && nowPlayingView) {
+            if (view === 'library') {
+                libraryView.style.display = 'block';
+                nowPlayingView.style.display = 'none';
+            } else if (view === 'now-playing') {
+                libraryView.style.display = 'none';
+                nowPlayingView.style.display = 'flex';
+                this.updateNowPlayingUI();
+            }
         }
     }
     
@@ -1150,38 +908,36 @@ class MusicApp {
     }
     
     importMoreMusic() {
-        alert('To add more music:\n\n1. Add MP3 files to your "music/" folder\n2. Add album art to "album-art/" folder\n3. Refresh the Music app\n\nSupported formats: MP3, WAV, OGG');
+        alert('To add more music:\n\n1. Add MP3 files to your "music/" folder\n2. Add album art to "album-art/" folder\n3. Refresh the Music app');
     }
     
     showFileInfo() {
         const currentSong = this.library[this.currentSongIndex];
         if (currentSong) {
-            alert(`📁 File Information:\n\n• File: ${currentSong.file}\n• Album Art: ${currentSong.albumArt}\n• Size: ~5 MB (typical)\n• Format: MP3\n• Bitrate: 320 kbps\n\nTo add more songs, place MP3 files in the "music/" folder.`);
+            alert(`📁 File Information:\n\n• File: ${currentSong.file}\n• Album Art: ${currentSong.albumArt}\n• Format: MP3`);
         } else {
             alert('No song currently playing');
         }
     }
     
-    // Window management
+    setVisualizerType(type) {
+        this.visualizerType = type;
+        this.window.querySelectorAll('.visualizer-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.visualizer === type);
+        });
+    }
+    
     open() {
+        console.log('🎵 Opening Music window');
         this.window.style.display = 'flex';
         this.isOpen = true;
         this.bringToFront();
         
-        // Reset animation
         this.window.style.animation = 'none';
         setTimeout(() => {
             this.window.style.animation = 'windowAppear 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.3)';
         }, 10);
         
-        // Resume audio context if suspended
-        if (this.visualizer && this.visualizer.audioContext) {
-            if (this.visualizer.audioContext.state === 'suspended') {
-                this.visualizer.audioContext.resume();
-            }
-        }
-        
-        console.log('🎵 Music app opened with your 5 local songs');
         return true;
     }
     
@@ -1217,12 +973,13 @@ class MusicApp {
             const z = parseInt(window.getComputedStyle(w).zIndex) || 100;
             if (z > maxZ) maxZ = z;
         });
-        
         this.window.style.zIndex = maxZ + 1;
     }
     
     makeDraggable() {
         const titlebar = this.window.querySelector('.window-titlebar');
+        if (!titlebar) return;
+        
         let isDragging = false;
         let offsetX, offsetY;
         
@@ -1240,7 +997,6 @@ class MusicApp {
         
         const onMouseMove = (e) => {
             if (!isDragging) return;
-            
             this.window.style.left = `${e.clientX - offsetX}px`;
             this.window.style.top = `${e.clientY - offsetY}px`;
         };
@@ -1253,7 +1009,23 @@ class MusicApp {
     }
 }
 
-// Initialize Music App
+// Initialize Music App with proper error handling
 window.addEventListener('DOMContentLoaded', () => {
-    window.MusicApp = new MusicApp();
+    console.log('🔄 Initializing Music App...');
+    try {
+        window.MusicApp = new MusicApp();
+        console.log('✅ Music App initialized successfully');
+    } catch (error) {
+        console.error('❌ Failed to initialize Music App:', error);
+    }
 });
+
+// Also try to initialize if DOMContentLoaded already fired
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(() => {
+        if (!window.MusicApp) {
+            console.log('🔄 Late initialization of Music App...');
+            window.MusicApp = new MusicApp();
+        }
+    }, 100);
+} 

@@ -1,13 +1,13 @@
-// finder.js - macOS Finder Clone
+// finder.js - macOS Finder Clone (FIXED VERSION)
 class FinderApp {
     constructor() {
         this.window = null;
         this.isOpen = false;
-        this.currentView = 'icon'; // icon, list, column
+        this.currentView = 'icon';
         this.currentPath = ['Macintosh HD', 'Users', 'Guest'];
         this.selectedItems = new Set();
         this.clipboard = [];
-        this.clipboardOperation = null; // 'cut' or 'copy'
+        this.clipboardOperation = null;
         this.searchQuery = '';
         this.sortBy = 'name';
         this.sortOrder = 'asc';
@@ -20,7 +20,7 @@ class FinderApp {
         this.createWindow();
         this.setupEventListeners();
         this.loadInitialContent();
-        console.log('📁 Finder initialized');
+        console.log('📁 Finder initialized successfully');
     }
     
     createWindow() {
@@ -56,7 +56,6 @@ class FinderApp {
             </div>
             
             <div class="finder-container">
-                <!-- Sidebar -->
                 <div class="finder-sidebar">
                     <div class="sidebar-section">
                         <div class="sidebar-title">Favorites</div>
@@ -150,9 +149,7 @@ class FinderApp {
                     ` : ''}
                 </div>
                 
-                <!-- Main Content -->
                 <div class="finder-main">
-                    <!-- Toolbar -->
                     <div class="finder-toolbar">
                         <div class="toolbar-group">
                             <button class="toolbar-btn" title="Back" id="backBtn">
@@ -190,18 +187,13 @@ class FinderApp {
                             </button>
                         </div>
                         
-                        <!-- Path Bar -->
-                        <div class="path-bar" id="pathBar">
-                            <!-- Path segments will be added here -->
-                        </div>
+                        <div class="path-bar" id="pathBar"></div>
                         
-                        <!-- Search -->
                         <div class="search-container">
                             <i class="fas fa-search search-icon"></i>
                             <input type="text" class="search-input" placeholder="Search" id="searchInput">
                         </div>
                         
-                        <!-- View Controls -->
                         <div class="view-controls">
                             <button class="view-btn ${this.currentView === 'icon' ? 'active' : ''}" data-view="icon" title="Icon View">
                                 <i class="fas fa-th-large"></i>
@@ -219,26 +211,18 @@ class FinderApp {
                         </button>
                     </div>
                     
-                    <!-- Content Area -->
                     <div class="finder-content">
-                        <!-- Column View -->
                         <div class="column-view ${this.currentView === 'column' ? 'active' : ''}" id="columnView">
                             <div class="column" data-level="0">
                                 <div class="column-header">Macintosh HD</div>
-                                <div class="column-items" data-path="macintosh-hd">
-                                    <!-- Column items will be loaded here -->
-                                </div>
+                                <div class="column-items" data-path="macintosh-hd"></div>
                             </div>
                         </div>
                         
-                        <!-- Icon View -->
                         <div class="icon-view ${this.currentView === 'icon' ? 'active' : ''}" id="iconView">
-                            <div class="icon-grid" id="iconGrid">
-                                <!-- Icons will be loaded here -->
-                            </div>
+                            <div class="icon-grid" id="iconGrid"></div>
                         </div>
                         
-                        <!-- List View -->
                         <div class="list-view ${this.currentView === 'list' ? 'active' : ''}" id="listView">
                             <div class="list-header">
                                 <div class="list-column" data-sort="icon">Name <i class="fas fa-sort"></i></div>
@@ -246,13 +230,10 @@ class FinderApp {
                                 <div class="list-column" data-sort="size">Size <i class="fas fa-sort"></i></div>
                                 <div class="list-column" data-sort="kind">Kind <i class="fas fa-sort"></i></div>
                             </div>
-                            <div class="list-items" id="listItems">
-                                <!-- List items will be loaded here -->
-                            </div>
+                            <div class="list-items" id="listItems"></div>
                         </div>
                     </div>
                     
-                    <!-- Preview Panel -->
                     <div class="preview-panel ${this.showPreview ? 'active' : ''}" id="previewPanel">
                         <div class="preview-header">
                             <h3 class="preview-title" id="previewTitle">No Selection</h3>
@@ -311,7 +292,6 @@ class FinderApp {
                 </div>
             </div>
             
-            <!-- Status Bar -->
             <div class="finder-statusbar">
                 <div class="status-info">
                     <span id="itemCount">0 items</span>
@@ -326,7 +306,6 @@ class FinderApp {
                 </div>
             </div>
             
-            <!-- Context Menu -->
             <div class="context-menu" id="contextMenu">
                 <div class="menu-item" data-action="open">
                     <i class="fas fa-folder-open"></i>
@@ -370,13 +349,11 @@ class FinderApp {
                 </div>
             </div>
             
-            <!-- Drag Overlay -->
             <div class="drag-overlay" id="dragOverlay">
                 <i class="fas fa-arrow-down"></i>
                 <span style="margin-left: 10px;">Drop to move here</span>
             </div>
             
-            <!-- Quick Look Modal -->
             <div class="quick-look" id="quickLook">
                 <div class="quick-look-header">
                     <h2 class="quick-look-title" id="quickLookTitle">Quick Look</h2>
@@ -384,9 +361,7 @@ class FinderApp {
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="quick-look-content" id="quickLookContent">
-                    <!-- Quick look content will be loaded here -->
-                </div>
+                <div class="quick-look-content" id="quickLookContent"></div>
             </div>
         `;
         
@@ -396,12 +371,10 @@ class FinderApp {
     }
     
     setupEventListeners() {
-        // Window controls
-        this.window.querySelector('.window-close').addEventListener('click', () => this.close());
-        this.window.querySelector('.window-minimize').addEventListener('click', () => this.minimize());
-        this.window.querySelector('.window-zoom').addEventListener('click', () => this.zoom());
+        this.window.querySelector('.window-close')?.addEventListener('click', () => this.close());
+        this.window.querySelector('.window-minimize')?.addEventListener('click', () => this.minimize());
+        this.window.querySelector('.window-zoom')?.addEventListener('click', () => this.zoom());
         
-        // Navigation
         this.window.querySelectorAll('.sidebar-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 const path = e.currentTarget.dataset.path;
@@ -409,21 +382,19 @@ class FinderApp {
             });
         });
         
-        // Toolbar buttons
-        this.window.querySelector('#backBtn').addEventListener('click', () => this.goBack());
-        this.window.querySelector('#forwardBtn').addEventListener('click', () => this.goForward());
-        this.window.querySelector('#upBtn').addEventListener('click', () => this.goUp());
-        this.window.querySelector('#newFolderBtn').addEventListener('click', () => this.createNewFolder());
-        this.window.querySelector('#viewBtn').addEventListener('click', () => this.showViewOptions());
-        this.window.querySelector('#arrangeBtn').addEventListener('click', () => this.showArrangeOptions());
-        this.window.querySelector('#shareBtn').addEventListener('click', () => this.shareSelected());
-        this.window.querySelector('#tagsBtn').addEventListener('click', () => this.toggleTags());
-        this.window.querySelector('#actionsBtn').addEventListener('click', () => this.showActionsMenu());
-        this.window.querySelector('#previewToggleBtn').addEventListener('click', () => this.togglePreview());
-        this.window.querySelector('#quickLookBtn').addEventListener('click', () => this.showQuickLook());
-        this.window.querySelector('#closeQuickLookBtn').addEventListener('click', () => this.hideQuickLook());
+        this.window.querySelector('#backBtn')?.addEventListener('click', () => this.goBack());
+        this.window.querySelector('#forwardBtn')?.addEventListener('click', () => this.goForward());
+        this.window.querySelector('#upBtn')?.addEventListener('click', () => this.goUp());
+        this.window.querySelector('#newFolderBtn')?.addEventListener('click', () => this.createNewFolder());
+        this.window.querySelector('#viewBtn')?.addEventListener('click', () => this.showViewOptions());
+        this.window.querySelector('#arrangeBtn')?.addEventListener('click', () => this.showArrangeOptions());
+        this.window.querySelector('#shareBtn')?.addEventListener('click', () => this.shareSelected());
+        this.window.querySelector('#tagsBtn')?.addEventListener('click', () => this.toggleTags());
+        this.window.querySelector('#actionsBtn')?.addEventListener('click', () => this.showActionsMenu());
+        this.window.querySelector('#previewToggleBtn')?.addEventListener('click', () => this.togglePreview());
+        this.window.querySelector('#quickLookBtn')?.addEventListener('click', () => this.showQuickLook());
+        this.window.querySelector('#closeQuickLookBtn')?.addEventListener('click', () => this.hideQuickLook());
         
-        // View controls
         this.window.querySelectorAll('.view-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const view = e.currentTarget.dataset.view;
@@ -431,22 +402,22 @@ class FinderApp {
             });
         });
         
-        // Search
         const searchInput = this.window.querySelector('#searchInput');
-        searchInput.addEventListener('input', (e) => {
-            this.searchQuery = e.target.value;
-            this.filterContent();
-        });
-        
-        searchInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                searchInput.value = '';
-                this.searchQuery = '';
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                this.searchQuery = e.target.value;
                 this.filterContent();
-            }
-        });
+            });
+            
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    searchInput.value = '';
+                    this.searchQuery = '';
+                    this.filterContent();
+                }
+            });
+        }
         
-        // Sort columns
         this.window.querySelectorAll('.list-column').forEach(col => {
             col.addEventListener('click', (e) => {
                 const sortBy = e.currentTarget.dataset.sort;
@@ -454,7 +425,6 @@ class FinderApp {
             });
         });
         
-        // Context menu
         document.addEventListener('click', () => this.hideContextMenu());
         document.addEventListener('contextmenu', (e) => {
             if (e.target.closest('.finder-content') || e.target.closest('.sidebar-item')) {
@@ -463,17 +433,16 @@ class FinderApp {
             }
         });
         
-        // Keyboard shortcuts
         this.setupKeyboardShortcuts();
-        
-        // Drag and drop
         this.setupDragAndDrop();
-        
-        // Make window draggable
         this.makeDraggable();
     }
     
-    // ==================== FOLDER CONTENT ====================
+    loadInitialContent() {
+        console.log('Loading initial content...');
+        this.loadFolder('home');
+    }
+    
     getFolderContents(folder) {
         const folders = {
             'home': {
@@ -564,10 +533,8 @@ class FinderApp {
         this.updatePathBar();
         this.updateSidebarSelection(folderName);
         
-        // Filter and sort items
         let items = [...folder.items];
         
-        // Apply search filter
         if (this.searchQuery) {
             items = items.filter(item => 
                 item.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
@@ -575,35 +542,31 @@ class FinderApp {
             );
         }
         
-        // Apply sorting
         items = this.sortItems(items, this.sortBy, this.sortOrder);
         
-        // Update counts
         this.window.querySelector('#itemCount').textContent = `${items.length} items`;
         this.window.querySelector('#selectedCount').textContent = `${this.selectedItems.size} selected`;
         
-        // Clear selection
         this.selectedItems.clear();
         this.updatePreview();
-        
-        // Load appropriate view
         this.loadViewContent(items);
     }
     
     loadViewContent(items) {
-        const currentView = this.currentView;
+        const iconGrid = this.window.querySelector('#iconGrid');
+        const listItems = this.window.querySelector('#listItems');
+        const columnView = this.window.querySelector('#columnView');
         
-        // Clear all views
-        this.window.querySelector('#iconGrid').innerHTML = '';
-        this.window.querySelector('#listItems').innerHTML = '';
-        this.window.querySelector('#columnView').innerHTML = '';
+        if (iconGrid) iconGrid.innerHTML = '';
+        if (listItems) listItems.innerHTML = '';
+        if (columnView) columnView.innerHTML = '';
         
         if (items.length === 0) {
             this.showEmptyState();
             return;
         }
         
-        switch(currentView) {
+        switch(this.currentView) {
             case 'icon':
                 this.loadIconView(items);
                 break;
@@ -618,6 +581,7 @@ class FinderApp {
     
     loadIconView(items) {
         const grid = this.window.querySelector('#iconGrid');
+        if (!grid) return;
         
         items.forEach((item, index) => {
             const iconItem = document.createElement('div');
@@ -628,10 +592,7 @@ class FinderApp {
             
             iconItem.innerHTML = `
                 <div class="icon-container">
-                    ${item.icon === 'emoji' ? 
-                        `<div class="icon-emoji">${item.emoji}</div>` :
-                        `<i class="fas fa-${item.icon} icon-${item.type}"></i>`
-                    }
+                    <i class="fas fa-${item.icon} icon-${item.type}"></i>
                 </div>
                 <div class="name">${item.name}</div>
             `;
@@ -666,6 +627,7 @@ class FinderApp {
     
     loadListView(items) {
         const listContainer = this.window.querySelector('#listItems');
+        if (!listContainer) return;
         
         items.forEach((item, index) => {
             const listItem = document.createElement('div');
@@ -714,8 +676,8 @@ class FinderApp {
     
     loadColumnView(items) {
         const columnView = this.window.querySelector('#columnView');
+        if (!columnView) return;
         
-        // Start with root column
         const column = document.createElement('div');
         column.className = 'column';
         column.dataset.level = '0';
@@ -747,7 +709,6 @@ class FinderApp {
                 this.clearSelection();
                 this.selectItem(index, columnItem);
                 
-                // If it's a folder, show next column
                 if (item.type === 'folder') {
                     this.showNextColumn(item);
                 }
@@ -778,11 +739,13 @@ class FinderApp {
             </div>
         `;
         
-        this.window.querySelector('#iconGrid').innerHTML = emptyHTML;
-        this.window.querySelector('#listItems').innerHTML = emptyHTML;
+        const iconGrid = this.window.querySelector('#iconGrid');
+        const listItems = this.window.querySelector('#listItems');
+        
+        if (iconGrid) iconGrid.innerHTML = emptyHTML;
+        if (listItems) listItems.innerHTML = emptyHTML;
     }
     
-    // ==================== SELECTION ====================
     selectItem(index, element) {
         if (this.selectedItems.has(index)) {
             this.selectedItems.delete(index);
@@ -799,7 +762,6 @@ class FinderApp {
     clearSelection() {
         this.selectedItems.clear();
         
-        // Remove selected class from all items
         this.window.querySelectorAll('.icon-item.selected, .list-item.selected, .column-item.selected').forEach(item => {
             item.classList.remove('selected');
         });
@@ -809,14 +771,64 @@ class FinderApp {
     }
     
     updateSelectionCount() {
-        this.window.querySelector('#selectedCount').textContent = `${this.selectedItems.size} selected`;
+        const selectedCount = this.window.querySelector('#selectedCount');
+        if (selectedCount) {
+            selectedCount.textContent = `${this.selectedItems.size} selected`;
+        }
     }
     
-    // ==================== NAVIGATION ====================
+    updatePreview() {
+        const panel = this.window.querySelector('#previewPanel');
+        if (!panel) return;
+        
+        const selectedCount = this.selectedItems.size;
+        
+        if (selectedCount === 0) {
+            this.window.querySelector('#previewTitle').textContent = 'No Selection';
+            this.window.querySelector('#previewSubtitle').textContent = 'Select an item to preview';
+            this.window.querySelector('#previewImage').innerHTML = '<i class="fas fa-file"></i>';
+            
+            ['Kind', 'Size', 'Created', 'Modified', 'Where', 'Tags'].forEach(id => {
+                const el = this.window.querySelector(`#info${id}`);
+                if (el) el.textContent = '—';
+            });
+            
+            return;
+        }
+        
+        const items = this.getCurrentFolderItems();
+        const selectedIndex = Array.from(this.selectedItems)[0];
+        const item = items[selectedIndex];
+        
+        if (!item) return;
+        
+        this.window.querySelector('#previewTitle').textContent = item.name;
+        this.window.querySelector('#previewSubtitle').textContent = selectedCount > 1 ? 
+            `${selectedCount} items selected` : item.kind;
+        
+        const previewImage = this.window.querySelector('#previewImage');
+        if (previewImage) {
+            previewImage.innerHTML = `<i class="fas fa-${item.icon} icon-${item.type}" style="font-size: 48px;"></i>`;
+        }
+        
+        const infoKind = this.window.querySelector('#infoKind');
+        const infoSize = this.window.querySelector('#infoSize');
+        const infoCreated = this.window.querySelector('#infoCreated');
+        const infoModified = this.window.querySelector('#infoModified');
+        const infoWhere = this.window.querySelector('#infoWhere');
+        const infoTags = this.window.querySelector('#infoTags');
+        
+        if (infoKind) infoKind.textContent = item.kind;
+        if (infoSize) infoSize.textContent = item.size;
+        if (infoCreated) infoCreated.textContent = item.date;
+        if (infoModified) infoModified.textContent = item.date;
+        if (infoWhere) infoWhere.textContent = this.currentPath.join(' → ');
+        if (infoTags) infoTags.textContent = item.tags.join(', ') || 'None';
+    }
+    
     navigateTo(path) {
         this.loadFolder(path);
         
-        // Update sidebar selection
         this.window.querySelectorAll('.sidebar-item').forEach(item => {
             item.classList.remove('active');
         });
@@ -828,6 +840,8 @@ class FinderApp {
     
     updatePathBar() {
         const pathBar = this.window.querySelector('#pathBar');
+        if (!pathBar) return;
+        
         pathBar.innerHTML = '';
         
         this.currentPath.forEach((segment, index) => {
@@ -837,10 +851,7 @@ class FinderApp {
             segmentElement.dataset.index = index;
             
             segmentElement.addEventListener('click', () => {
-                // Navigate to this level
-                const newPath = this.currentPath.slice(0, index + 1);
-                // This would need actual path navigation logic
-                console.log('Navigate to:', newPath.join(' → '));
+                console.log('Navigate to:', this.currentPath.slice(0, index + 1).join(' → '));
             });
             
             pathBar.appendChild(segmentElement);
@@ -863,38 +874,25 @@ class FinderApp {
         });
     }
     
-    goBack() {
-        console.log('Go back');
-        // Implement back history
-    }
+    goBack() { console.log('Go back'); }
+    goForward() { console.log('Go forward'); }
+    goUp() { console.log('Go up one level'); }
     
-    goForward() {
-        console.log('Go forward');
-        // Implement forward history
-    }
-    
-    goUp() {
-        console.log('Go up one level');
-        // Implement going up one directory level
-    }
-    
-    // ==================== VIEW MANAGEMENT ====================
     switchView(view) {
         this.currentView = view;
         
-        // Update active view button
         this.window.querySelectorAll('.view-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.view === view);
         });
         
-        // Show/hide views
         const views = ['iconView', 'listView', 'columnView'];
         views.forEach(viewId => {
             const element = this.window.querySelector(`#${viewId}`);
-            element.classList.toggle('active', viewId === `${view}View`);
+            if (element) {
+                element.classList.toggle('active', viewId === `${view}View`);
+            }
         });
         
-        // Reload content in new view
         const currentFolder = this.window.querySelector('.sidebar-item.active')?.dataset.path || 'home';
         this.loadFolder(currentFolder);
     }
@@ -904,74 +902,24 @@ class FinderApp {
         const panel = this.window.querySelector('#previewPanel');
         const btn = this.window.querySelector('#previewToggleBtn');
         
-        panel.classList.toggle('active', this.showPreview);
-        btn.classList.toggle('active', this.showPreview);
+        if (panel) panel.classList.toggle('active', this.showPreview);
+        if (btn) btn.classList.toggle('active', this.showPreview);
         
         if (this.showPreview && this.selectedItems.size > 0) {
             this.updatePreview();
         }
     }
     
-    updatePreview() {
-        const panel = this.window.querySelector('#previewPanel');
-        const selectedCount = this.selectedItems.size;
-        
-        if (selectedCount === 0) {
-            panel.querySelector('#previewTitle').textContent = 'No Selection';
-            panel.querySelector('#previewSubtitle').textContent = 'Select an item to preview';
-            panel.querySelector('#previewImage').innerHTML = '<i class="fas fa-file"></i>';
-            
-            // Reset info
-            ['Kind', 'Size', 'Created', 'Modified', 'Where', 'Tags'].forEach(id => {
-                panel.querySelector(`#info${id}`).textContent = '—';
-            });
-            
-            return;
-        }
-        
-        // For now, just show first selected item
-        const items = this.getCurrentFolderItems();
-        const selectedIndex = Array.from(this.selectedItems)[0];
-        const item = items[selectedIndex];
-        
-        if (!item) return;
-        
-        panel.querySelector('#previewTitle').textContent = item.name;
-        panel.querySelector('#previewSubtitle').textContent = selectedCount > 1 ? 
-            `${selectedCount} items selected` : item.kind;
-        
-        // Update preview image based on type
-        const previewImage = panel.querySelector('#previewImage');
-        previewImage.innerHTML = `
-            <i class="fas fa-${item.icon} icon-${item.type}" style="font-size: 48px;"></i>
-        `;
-        
-        // Update info
-        panel.querySelector('#infoKind').textContent = item.kind;
-        panel.querySelector('#infoSize').textContent = item.size;
-        panel.querySelector('#infoCreated').textContent = item.date;
-        panel.querySelector('#infoModified').textContent = item.date;
-        panel.querySelector('#infoWhere').textContent = this.currentPath.join(' → ');
-        panel.querySelector('#infoTags').textContent = item.tags.join(', ') || 'None';
-    }
-    
-    // ==================== ACTIONS ====================
     createNewFolder() {
         const folderName = prompt('New folder name:', 'Untitled Folder');
         if (folderName) {
             console.log('Creating folder:', folderName);
-            // Add to current folder
             this.loadFolder(this.window.querySelector('.sidebar-item.active')?.dataset.path || 'home');
         }
     }
     
-    showViewOptions() {
-        alert('View options would appear here');
-    }
-    
-    showArrangeOptions() {
-        alert('Arrange options would appear here');
-    }
+    showViewOptions() { alert('View options would appear here'); }
+    showArrangeOptions() { alert('Arrange options would appear here'); }
     
     shareSelected() {
         if (this.selectedItems.size === 0) {
@@ -989,32 +937,28 @@ class FinderApp {
         if (tagsSection) {
             tagsSection.style.display = this.showTags ? 'block' : 'none';
         }
-        btn.classList.toggle('active', this.showTags);
+        if (btn) btn.classList.toggle('active', this.showTags);
     }
     
-    showActionsMenu() {
-        alert('Actions menu would appear here');
-    }
+    showActionsMenu() { alert('Actions menu would appear here'); }
     
     openItem(item) {
         alert(`Opening: ${item.name}\n\nType: ${item.kind}\n\nThis would open the appropriate application.`);
     }
     
-    // ==================== CONTEXT MENU ====================
     showContextMenu(x, y) {
         const menu = this.window.querySelector('#contextMenu');
+        if (!menu) return;
+        
         menu.style.left = `${x}px`;
         menu.style.top = `${y}px`;
         menu.style.display = 'flex';
         
-        // Update menu items based on selection
         const hasSelection = this.selectedItems.size > 0;
-        const isFolder = hasSelection && this.getSelectedItems()[0]?.type === 'folder';
         
         menu.querySelectorAll('.menu-item').forEach(item => {
             const action = item.dataset.action;
             
-            // Enable/disable based on context
             if (action === 'paste') {
                 item.style.display = this.clipboard.length > 0 ? 'flex' : 'none';
             } else if (action === 'open' || action === 'quicklook') {
@@ -1023,7 +967,6 @@ class FinderApp {
                 item.style.display = 'flex';
             }
             
-            // Set up click handlers
             item.onclick = (e) => {
                 e.stopPropagation();
                 this.handleContextAction(action);
@@ -1033,7 +976,7 @@ class FinderApp {
     
     hideContextMenu() {
         const menu = this.window.querySelector('#contextMenu');
-        menu.style.display = 'none';
+        if (menu) menu.style.display = 'none';
     }
     
     handleContextAction(action) {
@@ -1042,46 +985,19 @@ class FinderApp {
         switch(action) {
             case 'open':
                 const items = this.getSelectedItems();
-                if (items.length === 1) {
-                    this.openItem(items[0]);
-                }
+                if (items.length === 1) this.openItem(items[0]);
                 break;
-                
-            case 'quicklook':
-                this.showQuickLook();
-                break;
-                
-            case 'cut':
-                this.cutSelected();
-                break;
-                
-            case 'copy':
-                this.copySelected();
-                break;
-                
-            case 'paste':
-                this.pasteClipboard();
-                break;
-                
-            case 'rename':
-                this.renameSelected();
-                break;
-                
-            case 'duplicate':
-                this.duplicateSelected();
-                break;
-                
-            case 'compress':
-                this.compressSelected();
-                break;
-                
-            case 'trash':
-                this.moveToTrash();
-                break;
+            case 'quicklook': this.showQuickLook(); break;
+            case 'cut': this.cutSelected(); break;
+            case 'copy': this.copySelected(); break;
+            case 'paste': this.pasteClipboard(); break;
+            case 'rename': this.renameSelected(); break;
+            case 'duplicate': this.duplicateSelected(); break;
+            case 'compress': this.compressSelected(); break;
+            case 'trash': this.moveToTrash(); break;
         }
     }
     
-    // ==================== QUICK LOOK ====================
     showQuickLook() {
         if (this.selectedItems.size === 0) {
             alert('Select an item to use Quick Look');
@@ -1089,14 +1005,14 @@ class FinderApp {
         }
         
         const items = this.getSelectedItems();
-        const item = items[0]; // Show first selected
-        
+        const item = items[0];
         const quickLook = this.window.querySelector('#quickLook');
         const title = this.window.querySelector('#quickLookTitle');
         const content = this.window.querySelector('#quickLookContent');
         
-        title.textContent = item.name;
+        if (!quickLook || !title || !content) return;
         
+        title.textContent = item.name;
         content.innerHTML = `
             <div style="text-align: center; padding: 40px;">
                 <i class="fas fa-${item.icon}" style="font-size: 96px; color: #007AFF; margin-bottom: 30px;"></i>
@@ -1111,10 +1027,10 @@ class FinderApp {
     }
     
     hideQuickLook() {
-        this.window.querySelector('#quickLook').classList.remove('active');
+        const quickLook = this.window.querySelector('#quickLook');
+        if (quickLook) quickLook.classList.remove('active');
     }
     
-    // ==================== FILE OPERATIONS ====================
     cutSelected() {
         const items = this.getSelectedItems();
         this.clipboard = [...items];
@@ -1131,7 +1047,6 @@ class FinderApp {
     
     pasteClipboard() {
         if (this.clipboard.length === 0) return;
-        
         console.log(`Pasting ${this.clipboard.length} items (${this.clipboardOperation})`);
         alert(`Would ${this.clipboardOperation} ${this.clipboard.length} items to this location`);
     }
@@ -1149,7 +1064,6 @@ class FinderApp {
         const newName = prompt('Rename:', item.name);
         if (newName && newName !== item.name) {
             console.log(`Renaming "${item.name}" to "${newName}"`);
-            // Update item name
             this.loadFolder(this.window.querySelector('.sidebar-item.active')?.dataset.path || 'home');
         }
     }
@@ -1157,7 +1071,6 @@ class FinderApp {
     duplicateSelected() {
         const count = this.selectedItems.size;
         if (count === 0) return;
-        
         console.log(`Duplicating ${count} items`);
         alert(`Would create copies of ${count} selected items`);
     }
@@ -1165,7 +1078,6 @@ class FinderApp {
     compressSelected() {
         const count = this.selectedItems.size;
         if (count === 0) return;
-        
         console.log(`Compressing ${count} items into archive.zip`);
         alert(`Would compress ${count} items into an archive`);
     }
@@ -1177,12 +1089,10 @@ class FinderApp {
         if (confirm(`Move ${count} item${count !== 1 ? 's' : ''} to Trash?`)) {
             console.log(`Moved ${count} items to Trash`);
             this.clearSelection();
-            // Remove items from current view
             this.loadFolder(this.window.querySelector('.sidebar-item.active')?.dataset.path || 'home');
         }
     }
     
-    // ==================== UTILITIES ====================
     getCurrentFolderItems() {
         const currentFolder = this.window.querySelector('.sidebar-item.active')?.dataset.path || 'home';
         const folder = this.getFolderContents(currentFolder);
@@ -1236,7 +1146,6 @@ class FinderApp {
             this.sortOrder = 'asc';
         }
         
-        // Update sort indicators
         this.window.querySelectorAll('.list-column i').forEach(icon => {
             icon.className = 'fas fa-sort';
         });
@@ -1246,7 +1155,6 @@ class FinderApp {
             currentColumn.className = `fas fa-sort-${this.sortOrder === 'asc' ? 'up' : 'down'}`;
         }
         
-        // Reload current folder
         const currentFolder = this.window.querySelector('.sidebar-item.active')?.dataset.path || 'home';
         this.loadFolder(currentFolder);
     }
@@ -1259,11 +1167,6 @@ class FinderApp {
     parseDate(dateStr) {
         if (dateStr === 'Today') return Date.now();
         if (dateStr === 'Yesterday') return Date.now() - 86400000;
-        
-        const parts = dateStr.split(' ');
-        if (parts[0] === 'Today') return Date.now();
-        
-        // Simple parsing for demo
         return new Date(dateStr).getTime() || Date.now();
     }
     
@@ -1280,11 +1183,10 @@ class FinderApp {
         return num * (units[unit] || 1);
     }
     
-    // ==================== DRAG AND DROP ====================
     setupDragAndDrop() {
         const dragOverlay = this.window.querySelector('#dragOverlay');
+        if (!dragOverlay) return;
         
-        // Allow dropping on window
         this.window.addEventListener('dragover', (e) => {
             e.preventDefault();
             dragOverlay.classList.add('active');
@@ -1301,7 +1203,6 @@ class FinderApp {
         });
     }
     
-    // ==================== KEYBOARD SHORTCUTS ====================
     setupKeyboardShortcuts() {
         document.addEventListener('keydown', (e) => {
             if (!this.isOpen) return;
@@ -1312,14 +1213,12 @@ class FinderApp {
                     this.hideQuickLook();
                     this.hideContextMenu();
                     break;
-                    
                 case ' ':
                     if (this.selectedItems.size > 0) {
                         e.preventDefault();
                         this.showQuickLook();
                     }
                     break;
-                    
                 case 'a':
                 case 'A':
                     if (e.metaKey || e.ctrlKey) {
@@ -1327,7 +1226,6 @@ class FinderApp {
                         this.selectAll();
                     }
                     break;
-                    
                 case 'Backspace':
                 case 'Delete':
                     if (this.selectedItems.size > 0) {
@@ -1335,7 +1233,6 @@ class FinderApp {
                         this.moveToTrash();
                     }
                     break;
-                    
                 case 'c':
                 case 'C':
                     if ((e.metaKey || e.ctrlKey) && !e.altKey) {
@@ -1343,7 +1240,6 @@ class FinderApp {
                         this.copySelected();
                     }
                     break;
-                    
                 case 'x':
                 case 'X':
                     if ((e.metaKey || e.ctrlKey) && !e.altKey) {
@@ -1351,7 +1247,6 @@ class FinderApp {
                         this.cutSelected();
                     }
                     break;
-                    
                 case 'v':
                 case 'V':
                     if ((e.metaKey || e.ctrlKey) && !e.altKey) {
@@ -1359,7 +1254,6 @@ class FinderApp {
                         this.pasteClipboard();
                     }
                     break;
-                    
                 case 'n':
                 case 'N':
                     if ((e.metaKey || e.ctrlKey) && e.shiftKey) {
@@ -1367,25 +1261,13 @@ class FinderApp {
                         this.createNewFolder();
                     }
                     break;
-                    
                 case '1':
-                    if (e.metaKey || e.ctrlKey) {
-                        e.preventDefault();
-                        this.switchView('icon');
-                    }
-                    break;
-                    
                 case '2':
-                    if (e.metaKey || e.ctrlKey) {
-                        e.preventDefault();
-                        this.switchView('list');
-                    }
-                    break;
-                    
                 case '3':
                     if (e.metaKey || e.ctrlKey) {
                         e.preventDefault();
-                        this.switchView('column');
+                        const view = e.key === '1' ? 'icon' : e.key === '2' ? 'list' : 'column';
+                        this.switchView(view);
                     }
                     break;
             }
@@ -1398,7 +1280,6 @@ class FinderApp {
             this.selectedItems.add(index);
         });
         
-        // Update UI
         this.window.querySelectorAll('.icon-item, .list-item, .column-item').forEach((item, index) => {
             item.classList.add('selected');
         });
@@ -1407,19 +1288,17 @@ class FinderApp {
         this.updatePreview();
     }
     
-    // ==================== WINDOW MANAGEMENT ====================
     open() {
+        console.log('📁 Opening Finder window');
         this.window.style.display = 'flex';
         this.isOpen = true;
         this.bringToFront();
         
-        // Reset animation
         this.window.style.animation = 'none';
         setTimeout(() => {
             this.window.style.animation = 'windowAppear 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.3)';
         }, 10);
         
-        console.log('📁 Finder opened');
         return true;
     }
     
@@ -1460,6 +1339,8 @@ class FinderApp {
     
     makeDraggable() {
         const titlebar = this.window.querySelector('.window-titlebar');
+        if (!titlebar) return;
+        
         let isDragging = false;
         let offsetX, offsetY;
         
@@ -1477,7 +1358,6 @@ class FinderApp {
         
         const onMouseMove = (e) => {
             if (!isDragging) return;
-            
             this.window.style.left = `${e.clientX - offsetX}px`;
             this.window.style.top = `${e.clientY - offsetY}px`;
         };
@@ -1490,7 +1370,23 @@ class FinderApp {
     }
 }
 
-// Initialize Finder App
+// Initialize Finder App with proper error handling
 window.addEventListener('DOMContentLoaded', () => {
-    window.FinderApp = new FinderApp();
-}); 
+    console.log('🔄 Initializing Finder App...');
+    try {
+        window.FinderApp = new FinderApp();
+        console.log('✅ Finder App initialized successfully');
+    } catch (error) {
+        console.error('❌ Failed to initialize Finder App:', error);
+    }
+});
+
+// Also try to initialize if DOMContentLoaded already fired
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(() => {
+        if (!window.FinderApp) {
+            console.log('🔄 Late initialization of Finder App...');
+            window.FinderApp = new FinderApp();
+        }
+    }, 100);
+} 
