@@ -256,6 +256,25 @@ class MacOSDock {
             return;
         }
 
+        // Calendar App
+if (appId === 'calendar') {
+    console.log("📅 Opening Calendar...");
+    if (window.CalendarApp) {
+        if (!window.CalendarApp.isOpen) {
+            window.CalendarApp.open();
+        } else {
+            window.CalendarApp.bringToFront();
+        }
+    } else {
+        console.error("❌ CalendarApp not found!");
+        if (typeof CalendarApp !== 'undefined') {
+            window.CalendarApp = new CalendarApp();
+            setTimeout(() => window.CalendarApp.open(), 100);
+        }
+    }
+    return;
+}
+
         // Safari (placeholder)
         if (appId === 'safari') {
             alert('Safari would open here!');
@@ -263,7 +282,7 @@ class MacOSDock {
         }
         
         // Other apps (placeholder)
-        if (['mail', 'messages', 'calendar', 'trash'].includes(appId)) {
+        if (['mail', 'messages', 'trash'].includes(appId)) {
             alert(`📱 ${appId.charAt(0).toUpperCase() + appId.slice(1)} app would open here!`);
             return;
         }
