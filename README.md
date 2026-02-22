@@ -1,4 +1,4 @@
-# 🍏 macOS NX - Web-based macOS Desktop Clone
+# macOS NX - Web-based macOS Desktop Clone
 
 ![macOS NX Desktop](wallpaper.jpg)
 
