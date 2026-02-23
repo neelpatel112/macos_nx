@@ -36,6 +36,7 @@ class MacOSDock {
             { id: 'music', name: 'Music', icon: 'icons/music.png' },
             { id: 'calendar', name: 'Calendar', icon: 'icons/calendar.png' },
             { id: 'github', name: 'GitHub', icon: 'icons/github.png' },
+            { id: 'maps', name: 'Maps', icon: 'icons/maps.png' },
             { id: 'system', name: 'System Preferences', icon: 'icons/system.png' }
         ];
         
@@ -298,6 +299,26 @@ if (appId === 'github') {
     }
     return;
 }
+
+// Maps App
+if (appId === 'maps') {
+    console.log("🗺️ Opening Maps...");
+    if (window.MapsApp) {
+        if (!window.MapsApp.isOpen) {
+            window.MapsApp.open();
+        } else {
+            window.MapsApp.bringToFront();
+        }
+    } else {
+        console.error("❌ MapsApp not found!");
+        if (typeof MapsApp !== 'undefined') {
+            window.MapsApp = new MapsApp();
+            setTimeout(() => window.MapsApp.open(), 100);
+        }
+    }
+    return;
+}
+
 
         // Safari (placeholder)
         if (appId === 'safari') {
