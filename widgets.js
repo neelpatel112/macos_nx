@@ -1,4 +1,4 @@
-// widgets.js - macOS Style Desktop Widgets
+// widgets.js - macOS Style Desktop Widgets with Analog Clock
 class DesktopWidgets {
     constructor() {
         this.container = null;
@@ -30,52 +30,60 @@ class DesktopWidgets {
     }
     
     loadMusicLibrary() {
-        // Load music from /music directory
-        // You can add your actual music files here
+        // Add your actual music files here
         this.musicLibrary = [
             {
                 title: "Bohemian Rhapsody",
                 artist: "Queen",
-                file: "music/Out of time.mp3",
+                file: "music/bohemian-rhapsody.mp3",
                 artwork: null
             },
             {
                 title: "Shape of You",
                 artist: "Ed Sheeran",
-                file: "music/Empire state of mind.mp3",
+                file: "music/shape-of-you.mp3",
                 artwork: null
             },
             {
                 title: "Blinding Lights",
                 artist: "The Weeknd",
-                file: "music/From time.mp3",
+                file: "music/blinding-lights.mp3",
                 artwork: null
             },
             {
                 title: "Rolling in the Deep",
                 artist: "Adele",
-                file: "music/Is this love.mp3",
+                file: "music/rolling-in-the-deep.mp3",
                 artwork: null
             }
         ];
-        
-        // If you have actual files, uncomment and modify this:
-        // this.loadMusicFiles();
-    }
-    
-    loadMusicFiles() {
-        // This would scan your music directory
-        // For now, using placeholder data
-        console.log("🎵 To add actual music files, place .mp3 files in /music folder");
     }
     
     renderWidgets() {
         this.container.innerHTML = `
-            <!-- Digital Clock Widget -->
+            <!-- Analog Clock Widget -->
             <div class="widget widget-clock" id="clockWidget">
-                <div class="clock-time" id="clockTime">--:--:--</div>
-                <div class="clock-date" id="clockDate">--- --- --, ----</div>
-                <div class="clock-weekday" id="clockWeekday">-----</div>
+                <div class="analog-clock" id="analogClock">
+                    <!-- Hour markers -->
+                    <div class="marker-12">12</div>
+                    <div class="marker-3">3</div>
+                    <div class="marker-6">6</div>
+                    <div class="marker-9">9</div>
+                    
+                    <!-- Minute markers container -->
+                    <div class="minute-markers" id="minuteMarkers"></div>
+                    
+                    <!-- Clock hands -->
+                    <div class="clock-hand hour-hand" id="hourHand"></div>
+                    <div class="clock-hand minute-hand" id="minuteHand"></div>
+                    <div class="clock-hand second-hand" id="secondHand"></div>
+                    
+                    <!-- Center dot -->
+                    <div class="clock-center"></div>
+                </div>
+                
+                <!-- Digital date below the clock -->
+                <div class="analog-date" id="analogDate"></div>
             </div>
             
             <!-- Weather Widget -->
@@ -148,45 +156,87 @@ class DesktopWidgets {
                 </div>
             </div>
             
-            <!-- Trash Widget (optional) -->
+            <!-- Trash Widget -->
             <div class="widget widget-trash" id="trashWidget">
                 <i class="fas fa-trash trash-icon"></i>
                 <span class="trash-text">Trash</span>
                 <span class="trash-count">0</span>
             </div>
         `;
+        
+        // Generate minute markers after container is created
+        setTimeout(() => this.generateMinuteMarkers(), 100);
+    }
+    
+    generateMinuteMarkers() {
+        const markersContainer = document.getElementById('minuteMarkers');
+        if (!markersContainer) return;
+        
+        // Clear existing markers
+        markersContainer.innerHTML = '';
+        
+        // Generate 60 minute markers
+        for (let i = 0; i < 60; i++) {
+            const marker = document.createElement('div');
+            marker.className = 'minute-marker';
+            
+            // Rotate each marker
+            const rotation = i * 6; // 360° / 60 = 6° per minute
+            marker.style.transform = `rotate(${rotation}deg)`;
+            
+            // Make every 5th marker (hour markers) slightly longer
+            if (i % 5 === 0) {
+                marker.style.height = '10px';
+                marker.style.background = 'rgba(255, 255, 255, 0.6)';
+                marker.style.top = '5px';
+            }
+            
+            markersContainer.appendChild(marker);
+        }
     }
     
     startClock() {
         const updateClock = () => {
             const now = new Date();
             
-            // Time
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const seconds = now.getSeconds().toString().padStart(2, '0');
-            document.getElementById('clockTime').textContent = `${hours}:${minutes}:${seconds}`;
+            // Get time components
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            const milliseconds = now.getMilliseconds();
             
-            // Date
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('clockDate').textContent = now.toLocaleDateString('en-US', options);
+            // Calculate hand rotations (smooth movements)
+            const hourRotation = (hours % 12) * 30 + minutes * 0.5 + seconds * (0.5/60);
+            const minuteRotation = minutes * 6 + seconds * 0.1;
+            const secondRotation = (seconds + milliseconds/1000) * 6;
             
-            // Weekday
-            const weekday = now.toLocaleDateString('en-US', { weekday: 'long' });
-            document.getElementById('clockWeekday').textContent = weekday;
+            // Apply rotations
+            const hourHand = document.getElementById('hourHand');
+            const minuteHand = document.getElementById('minuteHand');
+            const secondHand = document.getElementById('secondHand');
+            
+            if (hourHand) hourHand.style.transform = `rotate(${hourRotation}deg)`;
+            if (minuteHand) minuteHand.style.transform = `rotate(${minuteRotation}deg)`;
+            if (secondHand) secondHand.style.transform = `rotate(${secondRotation}deg)`;
+            
+            // Update digital date
+            const dateElement = document.getElementById('analogDate');
+            if (dateElement) {
+                const weekday = now.toLocaleDateString('en-US', { weekday: 'short' });
+                const month = now.toLocaleDateString('en-US', { month: 'short' });
+                const day = now.getDate();
+                
+                dateElement.innerHTML = `<span class="weekday">${weekday}</span> ${month} ${day}`;
+            }
         };
         
         updateClock();
-        setInterval(updateClock, 1000);
+        setInterval(updateClock, 50); // Update every 50ms for smooth second hand
     }
     
     fetchWeather() {
-        // Using OpenWeatherMap free API (you'll need to sign up for a free API key)
-        // For demo, using mock data
+        // Mock weather data for demo
         this.mockWeatherData();
-        
-        // If you want real weather, uncomment this:
-        // this.getRealWeather();
     }
     
     mockWeatherData() {
@@ -211,9 +261,13 @@ class DesktopWidgets {
     }
     
     setupMusicListeners() {
-        document.getElementById('musicPrev').addEventListener('click', () => this.prevTrack());
-        document.getElementById('musicNext').addEventListener('click', () => this.nextTrack());
-        document.getElementById('musicPlayPause').addEventListener('click', () => this.togglePlay());
+        const prevBtn = document.getElementById('musicPrev');
+        const nextBtn = document.getElementById('musicNext');
+        const playPauseBtn = document.getElementById('musicPlayPause');
+        
+        if (prevBtn) prevBtn.addEventListener('click', () => this.prevTrack());
+        if (nextBtn) nextBtn.addEventListener('click', () => this.nextTrack());
+        if (playPauseBtn) playPauseBtn.addEventListener('click', () => this.togglePlay());
         
         // Create audio element
         this.audioElement = new Audio();
@@ -231,10 +285,12 @@ class DesktopWidgets {
         
         if (this.isPlaying) {
             this.audioElement.pause();
-            document.querySelector('#musicPlayPause i').className = 'fas fa-play';
+            const playBtn = document.querySelector('#musicPlayPause i');
+            if (playBtn) playBtn.className = 'fas fa-play';
         } else {
             this.audioElement.play();
-            document.querySelector('#musicPlayPause i').className = 'fas fa-pause';
+            const playBtn = document.querySelector('#musicPlayPause i');
+            if (playBtn) playBtn.className = 'fas fa-pause';
         }
         
         this.isPlaying = !this.isPlaying;
@@ -244,13 +300,9 @@ class DesktopWidgets {
         const track = this.musicLibrary[index];
         if (!track) return;
         
-        // In a real implementation, you'd have actual MP3 files
-        // For demo, we'll simulate playback
         document.getElementById('musicTitle').textContent = track.title;
         document.getElementById('musicArtist').textContent = track.artist;
-        
-        // Simulate duration for demo
-        document.getElementById('musicDuration').textContent = '3:45';
+        document.getElementById('musicDuration').textContent = '3:45'; // Placeholder
         
         // If you have actual files:
         // this.audioElement.src = track.file;
@@ -276,11 +328,13 @@ class DesktopWidgets {
     updateProgress() {
         if (this.audioElement.duration) {
             const progress = (this.audioElement.currentTime / this.audioElement.duration) * 100;
-            document.getElementById('musicProgress').style.width = `${progress}%`;
+            const progressBar = document.getElementById('musicProgress');
+            if (progressBar) progressBar.style.width = `${progress}%`;
             
             const currentMin = Math.floor(this.audioElement.currentTime / 60);
             const currentSec = Math.floor(this.audioElement.currentTime % 60).toString().padStart(2, '0');
-            document.getElementById('musicCurrentTime').textContent = `${currentMin}:${currentSec}`;
+            const currentTimeEl = document.getElementById('musicCurrentTime');
+            if (currentTimeEl) currentTimeEl.textContent = `${currentMin}:${currentSec}`;
         }
     }
     
@@ -288,42 +342,9 @@ class DesktopWidgets {
         if (this.audioElement.duration) {
             const durationMin = Math.floor(this.audioElement.duration / 60);
             const durationSec = Math.floor(this.audioElement.duration % 60).toString().padStart(2, '0');
-            document.getElementById('musicDuration').textContent = `${durationMin}:${durationSec}`;
+            const durationEl = document.getElementById('musicDuration');
+            if (durationEl) durationEl.textContent = `${durationMin}:${durationSec}`;
         }
-    }
-    
-    getRealWeather() {
-        // You'll need a free API key from OpenWeatherMap
-        const API_KEY = 'YOUR_API_KEY';
-        const city = 'Ahmedabad'; // Change to your city
-        
-        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${API_KEY}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('weatherCity').textContent = data.name;
-                document.getElementById('weatherTemp').textContent = `${Math.round(data.main.temp)}°`;
-                document.getElementById('weatherCondition').textContent = data.weather[0].main;
-                document.getElementById('weatherHumidity').textContent = `${data.main.humidity}%`;
-                document.getElementById('weatherWind').textContent = `${Math.round(data.wind.speed * 3.6)} km/h`;
-                
-                // Weather icon mapping
-                const iconMap = {
-                    'Clear': 'fa-sun',
-                    'Clouds': 'fa-cloud',
-                    'Rain': 'fa-cloud-rain',
-                    'Snow': 'fa-snowflake',
-                    'Thunderstorm': 'fa-cloud-bolt',
-                    'Drizzle': 'fa-cloud-rain',
-                    'Mist': 'fa-smog'
-                };
-                
-                document.getElementById('weatherIcon').innerHTML = 
-                    `<i class="fas ${iconMap[data.weather[0].main] || 'fa-cloud'}"></i>`;
-            })
-            .catch(error => {
-                console.error('Weather fetch failed:', error);
-                this.mockWeatherData();
-            });
     }
 }
 
@@ -331,4 +352,4 @@ class DesktopWidgets {
 document.addEventListener('DOMContentLoaded', () => {
     console.log('📊 Initializing Desktop Widgets...');
     window.DesktopWidgets = new DesktopWidgets();
-}); 
+});
