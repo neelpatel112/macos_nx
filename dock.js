@@ -277,25 +277,27 @@ if (appId === 'calendar') {
 }
 
 
-// GitHub App
+// GitHub App - FIX THIS SECTION
 if (appId === 'github') {
     console.log("🐙 Opening GitHub...");
-    if (window.GitHubApp) {
-        if (!window.GitHubApp.isOpen) {
-            window.GitHubApp.open();
+    // Change this line - it should be GitHubProfileApp, not GitHubApp
+    if (window.GitHubProfileApp) {
+        if (!window.GitHubProfileApp.isOpen) {
+            window.GitHubProfileApp.open();
         } else {
-            window.GitHubApp.bringToFront();
+            window.GitHubProfileApp.bringToFront();
         }
     } else {
-        console.error("❌ GitHubApp not found!");
-        if (typeof GitHubApp !== 'undefined') {
-            window.GitHubApp = new GitHubApp();
-            setTimeout(() => window.GitHubApp.open(), 100);
+        console.error("❌ GitHubProfileApp not found!");
+        if (typeof GitHubProfileApp !== 'undefined') {
+            window.GitHubProfileApp = new GitHubProfileApp();
+            setTimeout(() => window.GitHubProfileApp.open(), 100);
+        } else {
+            console.error("❌ GitHubProfileApp is not defined. Check if github.js loaded correctly.");
         }
     }
     return;
 }
-
 
         // Safari (placeholder)
         if (appId === 'safari') {
