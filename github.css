@@ -1,0 +1,339 @@
+/* github.css - GitHub App Styling */
+.github-window {
+    background: rgba(255, 255, 255, 0.98) !important;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+}
+
+.github-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: white;
+}
+
+/* Toolbar */
+.github-toolbar {
+    height: 48px;
+    background: #f6f8fa;
+    border-bottom: 1px solid #d0d7de;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.nav-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid #d0d7de;
+    background: white;
+    color: #24292f;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.nav-btn:hover:not(:disabled) {
+    background: #eaeef2;
+    border-color: #afb8c1;
+}
+
+.nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.url-bar {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    padding: 0 8px;
+    height: 32px;
+}
+
+.url-bar i {
+    color: #57606a;
+    font-size: 14px;
+    margin-right: 8px;
+}
+
+.url-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    color: #24292f;
+    background: transparent;
+}
+
+.url-input::placeholder {
+    color: #8c959f;
+}
+
+.action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid #d0d7de;
+    background: white;
+    color: #24292f;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.action-btn:hover {
+    background: #eaeef2;
+    border-color: #afb8c1;
+}
+
+/* GitHub WebView */
+.github-webview {
+    flex: 1;
+    background: white;
+    overflow: hidden;
+    position: relative;
+}
+
+#githubFrame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: white;
+}
+
+/* Loading Indicator */
+.loading-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #f0f0f0;
+    overflow: hidden;
+    display: none;
+}
+
+.loading-indicator.active {
+    display: block;
+}
+
+.loading-indicator::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30%;
+    height: 100%;
+    background: #2da44e;
+    animation: loading 1.5s infinite ease-in-out;
+}
+
+@keyframes loading {
+    0% { left: -30%; }
+    100% { left: 100%; }
+}
+
+/* Status Bar */
+.github-statusbar {
+    height: 28px;
+    background: #f6f8fa;
+    border-top: 1px solid #d0d7de;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    font-size: 12px;
+    color: #57606a;
+    gap: 20px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-item i {
+    font-size: 12px;
+}
+
+.status-item.secure {
+    color: #1a7f37;
+}
+
+.progress-container {
+    flex: 1;
+    height: 4px;
+    background: #d0d7de;
+    border-radius: 2px;
+    max-width: 200px;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #2da44e;
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.3s;
+}
+
+/* Error State */
+.error-state {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #57606a;
+    display: none;
+}
+
+.error-state.active {
+    display: block;
+}
+
+.error-state i {
+    font-size: 48px;
+    color: #d1242f;
+    margin-bottom: 16px;
+}
+
+.error-state h3 {
+    font-size: 18px;
+    color: #24292f;
+    margin-bottom: 8px;
+}
+
+.error-state p {
+    font-size: 14px;
+    max-width: 300px;
+    margin-bottom: 16px;
+}
+
+.retry-btn {
+    background: #2da44e;
+    color: white;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.retry-btn:hover {
+    background: #2c974b;
+}
+
+/* Quick Actions */
+.quick-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.quick-action {
+    padding: 0 12px;
+    height: 32px;
+    border-radius: 6px;
+    background: white;
+    border: 1px solid #d0d7de;
+    color: #24292f;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.quick-action:hover {
+    background: #eaeef2;
+    border-color: #afb8c1;
+}
+
+.quick-action i {
+    font-size: 14px;
+    color: #57606a;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .quick-actions {
+        display: none;
+    }
+    
+    .status-item span {
+        display: none;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .github-window {
+        background: rgba(30, 30, 30, 0.98) !important;
+    }
+    
+    .github-container {
+        background: #0d1117;
+    }
+    
+    .github-toolbar {
+        background: #161b22;
+        border-bottom-color: #30363d;
+    }
+    
+    .nav-btn, .action-btn, .quick-action {
+        background: #21262d;
+        border-color: #30363d;
+        color: #c9d1d9;
+    }
+    
+    .nav-btn:hover:not(:disabled), .action-btn:hover, .quick-action:hover {
+        background: #30363d;
+    }
+    
+    .url-bar {
+        background: #010409;
+        border-color: #30363d;
+    }
+    
+    .url-input {
+        color: #c9d1d9;
+        background: transparent;
+    }
+    
+    .url-input::placeholder {
+        color: #8b949e;
+    }
+    
+    .github-statusbar {
+        background: #161b22;
+        border-top-color: #30363d;
+        color: #8b949e;
+    }
+    
+    .status-item.secure {
+        color: #3fb950;
+    }
+    
+    .progress-container {
+        background: #30363d;
+    }
+    
+    .error-state h3 {
+        color: #c9d1d9;
+    }
+} 

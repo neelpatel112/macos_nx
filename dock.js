@@ -35,6 +35,7 @@ class MacOSDock {
             { id: 'messages', name: 'Messages', icon: 'icons/messages.png' },
             { id: 'music', name: 'Music', icon: 'icons/music.png' },
             { id: 'calendar', name: 'Calendar', icon: 'icons/calendar.png' },
+            { id: 'github', name: 'GitHub', icon: 'icons/github.png' },
             { id: 'system', name: 'System Preferences', icon: 'icons/system.png' }
         ];
         
@@ -274,6 +275,27 @@ if (appId === 'calendar') {
     }
     return;
 }
+
+
+// GitHub App
+if (appId === 'github') {
+    console.log("🐙 Opening GitHub...");
+    if (window.GitHubApp) {
+        if (!window.GitHubApp.isOpen) {
+            window.GitHubApp.open();
+        } else {
+            window.GitHubApp.bringToFront();
+        }
+    } else {
+        console.error("❌ GitHubApp not found!");
+        if (typeof GitHubApp !== 'undefined') {
+            window.GitHubApp = new GitHubApp();
+            setTimeout(() => window.GitHubApp.open(), 100);
+        }
+    }
+    return;
+}
+
 
         // Safari (placeholder)
         if (appId === 'safari') {
