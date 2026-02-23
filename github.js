@@ -1,9 +1,11 @@
-// github.js - GitHub Profile Viewer
+// github.js - GitHub Profile Viewer (FIXED with proxy)
 class GitHubApp {
     constructor() {
         this.window = null;
         this.isOpen = false;
         this.profileUrl = 'https://github.com/neelpatel112';
+        // Use a CORS proxy to bypass iframe restrictions
+        this.proxyUrl = 'https://corsproxy.io/?';
         this.history = [];
         this.historyIndex = -1;
         this.bookmarks = [
@@ -69,7 +71,7 @@ class GitHubApp {
                     </div>
                     
                     <div class="url-bar">
-                        <i class="fas fa-lock secure"></i>
+                        <i class="fas fa-exclamation-triangle" style="color: #f0883e;"></i>
                         <input type="text" class="url-input" id="urlInput" value="${this.profileUrl}" readonly>
                     </div>
                     
@@ -86,9 +88,9 @@ class GitHubApp {
                             <i class="far fa-star"></i>
                             <span>Stars</span>
                         </button>
-                        <button class="quick-action" id="bookmarkBtn">
-                            <i class="far fa-bookmark"></i>
-                            <span>Bookmark</span>
+                        <button class="quick-action" id="openInNewBtn">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span>Open in Browser</span>
                         </button>
                     </div>
                     
@@ -97,34 +99,61 @@ class GitHubApp {
                     </button>
                 </div>
                 
-                <!-- GitHub WebView -->
+                <!-- GitHub WebView - Using proxy -->
                 <div class="github-webview">
                     <div class="loading-indicator" id="loadingIndicator"></div>
                     <div class="error-state" id="errorState">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Failed to load GitHub</h3>
-                        <p>Check your internet connection and try again</p>
-                        <button class="retry-btn" id="retryBtn">Retry</button>
+                        <h3>GitHub cannot be embedded</h3>
+                        <p>GitHub blocks being shown in iframes for security reasons.</p>
+                        <button class="retry-btn" id="openBrowserBtn">
+                            <i class="fas fa-external-link-alt"></i>
+                            Open in New Tab
+                        </button>
+                        <button class="retry-btn" id="retryBtn" style="background: #2da44e; margin-top: 10px;">
+                            <i class="fas fa-redo-alt"></i>
+                            Try Proxy
+                        </button>
                     </div>
-                    <iframe id="githubFrame" src="${this.profileUrl}" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation"></iframe>
+                    <iframe id="githubFrame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation" style="display: none;"></iframe>
+                </div>
+                
+                <!-- Alternative: GitHub Stats Card -->
+                <div id="profileCard" style="flex: 1; padding: 40px; overflow-y: auto; background: white; display: none;">
+                    <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+                        <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" style="width: 120px; height: 120px; margin-bottom: 30px;">
+                        
+                        <h1 style="font-size: 36px; margin-bottom: 10px; color: #24292f;">neelpatel112</h1>
+                        <p style="font-size: 18px; color: #57606a; margin-bottom: 30px;">GitHub Profile</p>
+                        
+                        <!-- GitHub Stats Cards -->
+                        <div style="display: flex; gap: 20px; justify-content: center; margin-bottom: 40px; flex-wrap: wrap;">
+                            <img src="https://github-readme-stats.vercel.app/api?username=neelpatel112&show_icons=true&theme=light" style="border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 100%;">
+                        </div>
+                        
+                        <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                            <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=neelpatel112&layout=compact&theme=light" style="border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); max-width: 100%;">
+                        </div>
+                        
+                        <div style="margin-top: 40px; padding: 20px; background: #f6f8fa; border-radius: 10px;">
+                            <p style="color: #57606a; margin-bottom: 20px;">GitHub doesn't allow embedding in iframes due to security restrictions.</p>
+                            <button class="retry-btn" id="openBrowserBtn2" style="background: #24292f;">
+                                <i class="fas fa-external-link-alt"></i>
+                                Open GitHub in New Tab
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Status Bar -->
                 <div class="github-statusbar">
-                    <div class="status-item secure">
-                        <i class="fas fa-lock"></i>
-                        <span>Secure connection</span>
+                    <div class="status-item" style="color: #f0883e;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>GitHub cannot be embedded</span>
                     </div>
-                    <div class="status-item" id="pageStatus">
-                        <i class="fas fa-circle" style="color: #2da44e;"></i>
-                        <span>Connected to GitHub</span>
-                    </div>
-                    <div class="progress-container" id="progressContainer">
-                        <div class="progress-bar" id="progressBar"></div>
-                    </div>
-                    <div id="bookmarkStatus" class="status-item" style="margin-left: auto;">
+                    <div class="status-item" style="margin-left: auto;">
                         <i class="far fa-bookmark"></i>
-                        <span>Bookmark this page</span>
+                        <span>Use proxy or open in browser</span>
                     </div>
                 </div>
             </div>
@@ -132,277 +161,131 @@ class GitHubApp {
         
         document.body.appendChild(this.window);
         
-        // Add to history
-        this.addToHistory(this.profileUrl);
+        // Setup buttons
+        this.setupButtons();
     }
     
-    setupEventListeners() {
+    setupButtons() {
+        // Open in browser buttons
+        const openBtns = this.window.querySelectorAll('#openBrowserBtn, #openBrowserBtn2, #openInNewBtn');
+        openBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                window.open(this.profileUrl, '_blank');
+            });
+        });
+        
+        // Try proxy button
+        this.window.querySelector('#retryBtn').addEventListener('click', () => this.tryProxy());
+        
         // Window controls
         this.window.querySelector('.window-close').addEventListener('click', () => this.close());
         this.window.querySelector('.window-minimize').addEventListener('click', () => this.minimize());
         this.window.querySelector('.window-zoom').addEventListener('click', () => this.zoom());
         
         // Navigation
-        const backBtn = this.window.querySelector('#backBtn');
-        const forwardBtn = this.window.querySelector('#forwardBtn');
-        const reloadBtn = this.window.querySelector('#reloadBtn');
-        
-        backBtn.addEventListener('click', () => this.goBack());
-        forwardBtn.addEventListener('click', () => this.goForward());
-        reloadBtn.addEventListener('click', () => this.reload());
+        this.window.querySelector('#reloadBtn').addEventListener('click', () => this.tryProxy());
         
         // Quick actions
         this.window.querySelector('#profileBtn').addEventListener('click', () => {
-            this.navigateTo('https://github.com/neelpatel112');
+            this.profileUrl = 'https://github.com/neelpatel112';
+            this.tryProxy();
         });
         
         this.window.querySelector('#reposBtn').addEventListener('click', () => {
-            this.navigateTo('https://github.com/neelpatel112?tab=repositories');
+            this.profileUrl = 'https://github.com/neelpatel112?tab=repositories';
+            this.tryProxy();
         });
         
         this.window.querySelector('#starsBtn').addEventListener('click', () => {
-            this.navigateTo('https://github.com/neelpatel112?tab=stars');
+            this.profileUrl = 'https://github.com/neelpatel112?tab=stars';
+            this.tryProxy();
         });
-        
-        this.window.querySelector('#bookmarkBtn').addEventListener('click', () => this.toggleBookmark());
-        this.window.querySelector('#bookmarkStatus').addEventListener('click', () => this.toggleBookmark());
-        
-        // Retry button
-        this.window.querySelector('#retryBtn').addEventListener('click', () => this.retry());
         
         // Menu button
         this.window.querySelector('#menuBtn').addEventListener('click', () => this.showMenu());
         
-        // Iframe events
-        const iframe = this.window.querySelector('#githubFrame');
-        iframe.addEventListener('load', () => this.onIframeLoad());
-        iframe.addEventListener('error', () => this.onIframeError());
-        
-        // Handle navigation attempts
-        try {
-            iframe.contentWindow?.addEventListener('popstate', () => {
-                this.updateUrlFromIframe();
-            });
-        } catch (e) {
-            console.log('Cannot access iframe contentWindow');
-        }
-        
         // Make window draggable
         this.makeDraggable();
-        
-        // Setup keyboard shortcuts
-        this.setupKeyboardShortcuts();
     }
     
-    setupKeyboardShortcuts() {
-        document.addEventListener('keydown', (e) => {
-            if (!this.isOpen) return;
-            
-            if (e.ctrlKey || e.metaKey) {
-                switch(e.key) {
-                    case 'r':
-                        e.preventDefault();
-                        this.reload();
-                        break;
-                    case '[':
-                        e.preventDefault();
-                        this.goBack();
-                        break;
-                    case ']':
-                        e.preventDefault();
-                        this.goForward();
-                        break;
-                    case 'd':
-                        e.preventDefault();
-                        this.toggleBookmark();
-                        break;
-                }
-            }
-            
-            // Escape to close?
-            if (e.key === 'Escape' && this.window.querySelector('#menuPopup')) {
-                this.window.querySelector('#menuPopup').remove();
-            }
-        });
-    }
-    
-    navigateTo(url) {
+    tryProxy() {
         const iframe = this.window.querySelector('#githubFrame');
-        const urlInput = this.window.querySelector('#urlInput');
-        const loadingIndicator = this.window.querySelector('#loadingIndicator');
         const errorState = this.window.querySelector('#errorState');
+        const profileCard = this.window.querySelector('#profileCard');
+        const loadingIndicator = this.window.querySelector('#loadingIndicator');
+        
+        // Try with different proxies
+        const proxies = [
+            `https://corsproxy.io/?${encodeURIComponent(this.profileUrl)}`,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(this.profileUrl)}`,
+            `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(this.profileUrl)}`
+        ];
         
         // Show loading
+        errorState.style.display = 'none';
+        profileCard.style.display = 'none';
+        iframe.style.display = 'block';
         loadingIndicator.classList.add('active');
-        errorState.classList.remove('active');
         
-        // Update URL bar
-        urlInput.value = url;
+        // Try first proxy
+        iframe.src = proxies[0];
         
-        // Simulate progress
-        this.simulateProgress();
-        
-        // Navigate iframe
-        try {
-            iframe.src = url;
-            this.addToHistory(url);
-            
-            // Update window title
-            const title = this.window.querySelector('.window-title');
-            if (url.includes('neelpatel112')) {
-                title.textContent = 'GitHub - neelpatel112';
-            } else {
-                title.textContent = 'GitHub';
-            }
-        } catch (e) {
-            console.error('Navigation error:', e);
-            this.onIframeError();
-        }
-    }
-    
-    onIframeLoad() {
-        const loadingIndicator = this.window.querySelector('#loadingIndicator');
-        const errorState = this.window.querySelector('#errorState');
-        const progressBar = this.window.querySelector('#progressBar');
-        
-        loadingIndicator.classList.remove('active');
-        errorState.classList.remove('active');
-        
-        // Complete progress
-        if (progressBar) progressBar.style.width = '100%';
+        // Set timeout to try next proxy if this fails
         setTimeout(() => {
-            if (progressBar) progressBar.style.width = '0%';
-        }, 300);
-        
-        // Try to get actual URL from iframe (may be restricted by CORS)
-        try {
-            const iframeUrl = this.window.querySelector('#githubFrame').contentWindow.location.href;
-            this.window.querySelector('#urlInput').value = iframeUrl;
-        } catch (e) {
-            // Can't access iframe URL due to CORS, keep current
-        }
-        
-        // Update bookmark status
-        this.updateBookmarkStatus();
-    }
-    
-    onIframeError() {
-        const loadingIndicator = this.window.querySelector('#loadingIndicator');
-        const errorState = this.window.querySelector('#errorState');
-        
-        loadingIndicator.classList.remove('active');
-        errorState.classList.add('active');
-    }
-    
-    simulateProgress() {
-        const progressBar = this.window.querySelector('#progressBar');
-        let width = 0;
-        const interval = setInterval(() => {
-            if (width >= 90) {
-                clearInterval(interval);
-                return;
+            if (!iframe.contentDocument || iframe.contentDocument.body.innerHTML.includes('Error')) {
+                // Try second proxy
+                iframe.src = proxies[1];
+                
+                setTimeout(() => {
+                    if (!iframe.contentDocument || iframe.contentDocument.body.innerHTML.includes('Error')) {
+                        // Try third proxy
+                        iframe.src = proxies[2];
+                        
+                        setTimeout(() => {
+                            if (!iframe.contentDocument || iframe.contentDocument.body.innerHTML.includes('Error')) {
+                                // All proxies failed, show profile card
+                                loadingIndicator.classList.remove('active');
+                                iframe.style.display = 'none';
+                                profileCard.style.display = 'block';
+                            }
+                        }, 5000);
+                    }
+                }, 5000);
             }
-            width += 10;
-            progressBar.style.width = width + '%';
-        }, 100);
-    }
-    
-    addToHistory(url) {
-        // Remove forward history if we're not at the end
-        if (this.historyIndex < this.history.length - 1) {
-            this.history = this.history.slice(0, this.historyIndex + 1);
-        }
+        }, 5000);
         
-        this.history.push(url);
-        this.historyIndex = this.history.length - 1;
-        
-        this.updateNavButtons();
-    }
-    
-    goBack() {
-        if (this.historyIndex > 0) {
-            this.historyIndex--;
-            const url = this.history[this.historyIndex];
-            this.navigateTo(url);
-        }
-    }
-    
-    goForward() {
-        if (this.historyIndex < this.history.length - 1) {
-            this.historyIndex++;
-            const url = this.history[this.historyIndex];
-            this.navigateTo(url);
-        }
-    }
-    
-    updateNavButtons() {
-        const backBtn = this.window.querySelector('#backBtn');
-        const forwardBtn = this.window.querySelector('#forwardBtn');
-        
-        backBtn.disabled = this.historyIndex <= 0;
-        forwardBtn.disabled = this.historyIndex >= this.history.length - 1;
-    }
-    
-    reload() {
-        const currentUrl = this.window.querySelector('#urlInput').value;
-        this.navigateTo(currentUrl);
-    }
-    
-    retry() {
-        const currentUrl = this.window.querySelector('#urlInput').value;
-        this.navigateTo(currentUrl);
-    }
-    
-    toggleBookmark() {
-        const currentUrl = this.window.querySelector('#urlInput').value;
-        const bookmarkStatus = this.window.querySelector('#bookmarkStatus');
-        const bookmarkBtn = this.window.querySelector('#bookmarkBtn i');
-        
-        // Check if already bookmarked
-        const isBookmarked = this.bookmarks.some(b => b.url === currentUrl);
-        
-        if (isBookmarked) {
-            // Remove bookmark
-            this.bookmarks = this.bookmarks.filter(b => b.url !== currentUrl);
-            bookmarkStatus.innerHTML = '<i class="far fa-bookmark"></i><span>Bookmark this page</span>';
-            bookmarkBtn.className = 'far fa-bookmark';
-            this.showNotification('Bookmark removed');
-        } else {
-            // Add bookmark
-            let name = currentUrl.replace('https://github.com/', '');
-            if (name === 'neelpatel112') name = 'Your Profile';
-            else if (name.includes('tab=repositories')) name = 'Your Repositories';
-            else if (name.includes('tab=stars')) name = 'Your Stars';
+        // Iframe load event
+        iframe.onload = () => {
+            loadingIndicator.classList.remove('active');
             
-            this.bookmarks.push({ name, url: currentUrl });
-            bookmarkStatus.innerHTML = '<i class="fas fa-bookmark"></i><span>Bookmarked</span>';
-            bookmarkBtn.className = 'fas fa-bookmark';
-            this.showNotification('Page bookmarked');
-        }
-    }
-    
-    updateBookmarkStatus() {
-        const currentUrl = this.window.querySelector('#urlInput').value;
-        const bookmarkStatus = this.window.querySelector('#bookmarkStatus');
-        const bookmarkBtn = this.window.querySelector('#bookmarkBtn i');
+            try {
+                // Check if we got GitHub content
+                const doc = iframe.contentDocument || iframe.contentWindow.document;
+                if (doc.body.innerHTML.includes('GitHub') || doc.body.innerHTML.includes('neelpatel112')) {
+                    // Success! Hide profile card
+                    profileCard.style.display = 'none';
+                    iframe.style.display = 'block';
+                } else {
+                    // Show profile card as fallback
+                    iframe.style.display = 'none';
+                    profileCard.style.display = 'block';
+                }
+            } catch (e) {
+                // Can't access content due to CORS, show profile card
+                iframe.style.display = 'none';
+                profileCard.style.display = 'block';
+            }
+        };
         
-        const isBookmarked = this.bookmarks.some(b => b.url === currentUrl);
-        
-        if (isBookmarked) {
-            bookmarkStatus.innerHTML = '<i class="fas fa-bookmark"></i><span>Bookmarked</span>';
-            bookmarkBtn.className = 'fas fa-bookmark';
-        } else {
-            bookmarkStatus.innerHTML = '<i class="far fa-bookmark"></i><span>Bookmark this page</span>';
-            bookmarkBtn.className = 'far fa-bookmark';
-        }
+        // Update URL display
+        this.window.querySelector('#urlInput').value = this.profileUrl;
     }
     
     showMenu() {
-        // Remove existing menu
+        // Menu implementation (same as before)
         const existingMenu = this.window.querySelector('#menuPopup');
         if (existingMenu) existingMenu.remove();
         
-        // Create menu
         const menu = document.createElement('div');
         menu.id = 'menuPopup';
         menu.style.cssText = `
@@ -416,21 +299,30 @@ class GitHubApp {
             border: 1px solid rgba(0,0,0,0.1);
         `;
         
-        // Position near menu button
         const btn = this.window.querySelector('#menuBtn');
         const rect = btn.getBoundingClientRect();
         menu.style.top = rect.bottom + 5 + 'px';
         menu.style.right = window.innerWidth - rect.right + 'px';
         
-        // Menu items
         const items = [
-            { icon: 'fa-home', text: 'GitHub Home', action: () => this.navigateTo('https://github.com') },
-            { icon: 'fa-user', text: 'Your Profile', action: () => this.navigateTo('https://github.com/neelpatel112') },
-            { icon: 'fa-code-branch', text: 'Your Repos', action: () => this.navigateTo('https://github.com/neelpatel112?tab=repositories') },
-            { icon: 'fa-star', text: 'Your Stars', action: () => this.navigateTo('https://github.com/neelpatel112?tab=stars') },
+            { icon: 'fa-home', text: 'GitHub Home', action: () => {
+                this.profileUrl = 'https://github.com';
+                this.tryProxy();
+            }},
+            { icon: 'fa-user', text: 'Your Profile', action: () => {
+                this.profileUrl = 'https://github.com/neelpatel112';
+                this.tryProxy();
+            }},
+            { icon: 'fa-code-branch', text: 'Your Repos', action: () => {
+                this.profileUrl = 'https://github.com/neelpatel112?tab=repositories';
+                this.tryProxy();
+            }},
+            { icon: 'fa-star', text: 'Your Stars', action: () => {
+                this.profileUrl = 'https://github.com/neelpatel112?tab=stars';
+                this.tryProxy();
+            }},
             { divider: true },
-            { icon: 'fa-cog', text: 'Settings', action: () => this.showNotification('Settings coming soon') },
-            { icon: 'fa-question-circle', text: 'About GitHub', action: () => this.navigateTo('https://github.com/about') }
+            { icon: 'fa-external-link-alt', text: 'Open in Browser', action: () => window.open(this.profileUrl, '_blank') }
         ];
         
         items.forEach(item => {
@@ -468,43 +360,17 @@ class GitHubApp {
             }
         });
         
-        // Close when clicking outside
-        const closeMenu = (e) => {
-            if (!menu.contains(e.target) && e.target !== btn) {
-                menu.remove();
-                document.removeEventListener('click', closeMenu);
-            }
-        };
-        
         setTimeout(() => {
+            const closeMenu = (e) => {
+                if (!menu.contains(e.target) && e.target !== btn) {
+                    menu.remove();
+                    document.removeEventListener('click', closeMenu);
+                }
+            };
             document.addEventListener('click', closeMenu);
         }, 100);
         
         document.body.appendChild(menu);
-    }
-    
-    showNotification(message) {
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #2da44e;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 13px;
-            z-index: 12000;
-            animation: slideIn 0.3s ease-out;
-        `;
-        notification.textContent = message;
-        
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease-out';
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
     }
     
     open() {
@@ -513,10 +379,14 @@ class GitHubApp {
         this.isOpen = true;
         this.bringToFront();
         
-        this.window.style.animation = 'none';
-        setTimeout(() => {
-            this.window.style.animation = 'windowAppear 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.3)';
-        }, 10);
+        // Show profile card by default (since iframe won't work)
+        const iframe = this.window.querySelector('#githubFrame');
+        const profileCard = this.window.querySelector('#profileCard');
+        const errorState = this.window.querySelector('#errorState');
+        
+        iframe.style.display = 'none';
+        errorState.style.display = 'block';
+        profileCard.style.display = 'none';
         
         return true;
     }
@@ -597,14 +467,4 @@ window.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
         console.error('❌ Failed to initialize GitHub App:', error);
     }
-});
-
-// Add animation for notifications
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-    }
-`;
-document.head.appendChild(style); 
+}); 
