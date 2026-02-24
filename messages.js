@@ -1,4 +1,4 @@
-// messages.js - Real P2P Chat using WebRTC
+// messages.js - Real P2P Chat using PeerJS with Public Server
 class MessagesApp {
     constructor() {
         this.window = null;
@@ -34,35 +34,74 @@ class MessagesApp {
         // Generate random peer ID
         this.myPeerId = 'user-' + Math.random().toString(36).substr(2, 9);
         
-        // Create peer connection
+        // Create peer connection with FREE public server
         this.peer = new Peer(this.myPeerId, {
-            debug: 2
+            host: 'peerjs-server.herokuapp.com',  // Free public server
+            port: 443,
+            secure: true,
+            path: '/',
+            config: {
+                'iceServers': [
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:stun1.l.google.com:19302' },
+                    { urls: 'stun:stun2.l.google.com:19302' },
+                    { urls: 'stun:stun3.l.google.com:19302' },
+                    { urls: 'stun:stun4.l.google.com:19302' },
+                    {
+                        urls: 'turn:openrelay.metered.ca:80',
+                        username: 'openrelayproject',
+                        credential: 'openrelayproject'
+                    },
+                    {
+                        urls: 'turn:openrelay.metered.ca:443',
+                        username: 'openrelayproject',
+                        credential: 'openrelayproject'
+                    }
+                ]
+            },
+            debug: 3
         });
         
         this.peer.on('open', (id) => {
             console.log('✅ Connected to P2P network with ID:', id);
             this.myPeerId = id;
             this.addSelfToOnlineUsers();
+            
+            // Update UI with peer ID
+            this.updatePeerIdDisplay();
         });
         
         this.peer.on('connection', (conn) => {
             console.log('📞 Incoming connection from:', conn.peer);
             
             conn.on('open', () => {
+                console.log('🔌 Connection opened with:', conn.peer);
                 this.handleNewConnection(conn);
             });
             
             conn.on('data', (data) => {
+                console.log('📨 Received data:', data);
                 this.handleIncomingData(conn.peer, data);
             });
             
             conn.on('close', () => {
+                console.log('🔒 Connection closed:', conn.peer);
                 this.handleDisconnect(conn.peer);
+            });
+            
+            conn.on('error', (err) => {
+                console.error('Connection error:', err);
             });
         });
         
         this.peer.on('error', (err) => {
             console.error('Peer error:', err);
+            alert('Connection error: ' + err.type + '. Make sure you have internet connection!');
+        });
+        
+        this.peer.on('disconnected', () => {
+            console.log('📴 Disconnected from server. Reconnecting...');
+            this.peer.reconnect();
         });
     }
     
@@ -75,20 +114,31 @@ class MessagesApp {
         });
     }
     
+    updatePeerIdDisplay() {
+        if (!this.window) return;
+        
+        const idDisplay = this.window.querySelector('#myPeerIdDisplay');
+        const idInput = this.window.querySelector('#myPeerIdInput');
+        
+        if (idDisplay) idDisplay.textContent = this.myPeerId;
+        if (idInput) idInput.value = this.myPeerId;
+    }
+    
     handleNewConnection(conn) {
         this.connections[conn.peer] = conn;
         
-        // Add to online users
+        // Check if user already exists
         const existingUser = this.onlineUsers.find(u => u.id === conn.peer);
         if (!existingUser) {
             this.onlineUsers.push({
                 id: conn.peer,
                 name: 'User-' + conn.peer.substr(0, 4),
-                online: true
+                online: true,
+                messages: []
             });
+            
+            this.updateOnlineUsersList();
         }
-        
-        this.updateOnlineUsersList();
     }
     
     handleIncomingData(peerId, data) {
@@ -106,11 +156,11 @@ class MessagesApp {
         
         // If this was active conversation, clear it
         if (this.activeConversation && this.activeConversation.id === peerId) {
-            this.activeConversation.online = false;
+            this.activeConversation = null;
         }
         
         this.updateOnlineUsersList();
-        this.updateChatHeader();
+        this.updateChatArea();
     }
     
     init() {
@@ -156,22 +206,26 @@ class MessagesApp {
             <div class="messages-container">
                 <div class="messages-sidebar">
                     <div class="messages-search">
-                        <input type="text" placeholder="Your ID: ${this.myPeerId}" readonly style="background: rgba(0,0,0,0.5);">
+                        <input type="text" id="myPeerIdInput" placeholder="Your ID" readonly style="background: rgba(0,0,0,0.5); color: #0a84ff; font-weight: bold;">
                     </div>
-                    <div class="connect-section" style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                            <input type="text" id="peerIdInput" placeholder="Enter friend's ID..." style="flex:1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white;">
-                            <button id="connectBtn" style="padding: 8px 16px; background: #0a84ff; border: none; border-radius: 6px; color: white; cursor: pointer;">
-                                <i class="fas fa-link"></i>
-                            </button>
+                    
+                    <div class="connect-section" style="padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <div style="margin-bottom: 12px; text-align: center;">
+                            <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 4px;">YOUR ID</div>
+                            <div id="myPeerIdDisplay" style="background: #0a84ff20; padding: 8px; border-radius: 8px; font-family: monospace; font-size: 12px; word-break: break-all;">${this.myPeerId || 'loading...'}</div>
                         </div>
-                        <div style="font-size: 12px; color: rgba(255,255,255,0.5); text-align: center;">
-                            Share your ID: <span style="color: #0a84ff;">${this.myPeerId || 'loading...'}</span>
+                        
+                        <div style="display: flex; gap: 8px; margin-top: 12px;">
+                            <input type="text" id="peerIdInput" placeholder="Enter friend's ID..." style="flex:1; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
+                            <button id="connectBtn" style="padding: 10px 16px; background: #0a84ff; border: none; border-radius: 8px; color: white; cursor: pointer;">
+                                <i class="fas fa-plug"></i> Connect
+                            </button>
                         </div>
                     </div>
                     
-                    <div class="online-header" style="padding: 12px; font-size: 13px; color: rgba(255,255,255,0.7); border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <div class="online-header" style="padding: 12px 16px; font-size: 13px; color: rgba(255,255,255,0.7); border-bottom: 1px solid rgba(255,255,255,0.1);">
                         <i class="fas fa-circle" style="color: #30d158; font-size: 10px;"></i> Online Users
+                        <span id="onlineCount" style="margin-left: 8px; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 12px; font-size: 11px;">0</span>
                     </div>
                     
                     <div class="conversations-list" id="onlineUsersList">
@@ -196,17 +250,19 @@ class MessagesApp {
     }
     
     renderOnlineUsers() {
-        if (this.onlineUsers.length === 0) {
+        const onlineOthers = this.onlineUsers.filter(u => !u.isMe);
+        
+        if (onlineOthers.length === 0) {
             return `
-                <div style="padding: 20px; text-align: center; color: rgba(255,255,255,0.3);">
-                    <i class="fas fa-user-slash" style="font-size: 24px; margin-bottom: 8px;"></i>
+                <div style="padding: 30px 20px; text-align: center; color: rgba(255,255,255,0.3);">
+                    <i class="fas fa-user-slash" style="font-size: 32px; margin-bottom: 12px;"></i>
                     <div>No one online yet</div>
-                    <div style="font-size: 11px; margin-top: 8px;">Share your ID to connect!</div>
+                    <div style="font-size: 12px; margin-top: 8px;">Share your ID to connect!</div>
                 </div>
             `;
         }
         
-        return this.onlineUsers.map(user => `
+        return onlineOthers.map(user => `
             <div class="conversation-item ${this.activeConversation?.id === user.id ? 'active' : ''}" data-user-id="${user.id}">
                 <div class="conversation-avatar">
                     ${user.name.charAt(0).toUpperCase()}
@@ -217,7 +273,7 @@ class MessagesApp {
                         <span>${user.name}</span>
                     </div>
                     <div class="conversation-lastmsg">
-                        ${user.isMe ? '(You)' : 'Click to chat'}
+                        Click to chat
                     </div>
                 </div>
             </div>
@@ -230,8 +286,8 @@ class MessagesApp {
                 <div class="no-conversation">
                     <i class="fas fa-comment-dots"></i>
                     <span>Select a user to start P2P chat</span>
-                    <div style="font-size: 12px; margin-top: 12px; color: rgba(255,255,255,0.3);">
-                        Messages are temporary and disappear when you close
+                    <div style="font-size: 12px; margin-top: 16px; color: rgba(255,255,255,0.3);">
+                        <i class="fas fa-shield-alt"></i> Direct connection • No messages saved
                     </div>
                 </div>
             `;
@@ -243,8 +299,8 @@ class MessagesApp {
                 <div class="chat-header-avatar">${user.name.charAt(0).toUpperCase()}</div>
                 <div class="chat-header-info">
                     <h3>${user.name}</h3>
-                    <div class="chat-header-status">
-                        🟢 Online (P2P Connected)
+                    <div class="chat-header-status" id="connectionStatus">
+                        <span class="status-dot">🟢</span> Connected (Direct P2P)
                     </div>
                 </div>
             </div>
@@ -270,9 +326,8 @@ class MessagesApp {
     }
     
     renderConversationHistory() {
-        if (!this.activeConversation.messages) {
-            this.activeConversation.messages = [];
-            return '<div style="text-align: center; color: rgba(255,255,255,0.2); padding: 20px;">No messages yet. Say hi! 👋</div>';
+        if (!this.activeConversation.messages || this.activeConversation.messages.length === 0) {
+            return '<div style="text-align: center; color: rgba(255,255,255,0.2); padding: 40px 20px;">No messages yet. Say hi! 👋</div>';
         }
         
         return this.activeConversation.messages.map(msg => this.renderMessage(msg)).join('');
@@ -302,6 +357,15 @@ class MessagesApp {
                     const targetId = peerIdInput.value.trim();
                     if (targetId) {
                         this.connectToPeer(targetId);
+                        peerIdInput.value = ''; // Clear input
+                    } else {
+                        alert('Please enter a friend ID!');
+                    }
+                });
+                
+                peerIdInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        connectBtn.click();
                     }
                 });
             }
@@ -321,10 +385,10 @@ class MessagesApp {
             const messageInput = this.window.querySelector('#messageInput');
             const sendBtn = this.window.querySelector('#sendMessageBtn');
             
-            if (messageInput && sendBtn && this.activeConversation) {
+            if (messageInput && sendBtn) {
                 messageInput.addEventListener('input', () => {
                     sendBtn.disabled = !messageInput.value.trim();
-                    this.sendTypingStatus(true);
+                    this.sendTypingStatus(messageInput.value.trim().length > 0);
                 });
                 
                 messageInput.addEventListener('keypress', (e) => {
@@ -339,28 +403,51 @@ class MessagesApp {
     }
     
     connectToPeer(peerId) {
-        if (!this.peer || peerId === this.myPeerId) {
+        if (!this.peer) {
+            alert('Peer connection not ready yet. Please wait...');
+            return;
+        }
+        
+        if (peerId === this.myPeerId) {
             alert("Can't connect to yourself!");
             return;
         }
         
         console.log('🔌 Connecting to:', peerId);
-        const conn = this.peer.connect(peerId);
+        
+        // Check if already connected
+        if (this.connections[peerId]) {
+            this.selectUser(peerId);
+            return;
+        }
+        
+        const conn = this.peer.connect(peerId, {
+            reliable: true,
+            serialization: 'json'
+        });
         
         conn.on('open', () => {
             console.log('✅ Connected to:', peerId);
             this.connections[peerId] = conn;
             
             // Add to online users
-            this.onlineUsers.push({
+            const newUser = {
                 id: peerId,
                 name: 'User-' + peerId.substr(0, 4),
                 online: true,
                 messages: []
-            });
+            };
             
+            this.onlineUsers.push(newUser);
             this.updateOnlineUsersList();
             this.selectUser(peerId);
+            
+            // Send initial greeting
+            setTimeout(() => {
+                if (this.activeConversation?.id === peerId) {
+                    // Optional: send auto greeting
+                }
+            }, 500);
         });
         
         conn.on('data', (data) => {
@@ -369,6 +456,11 @@ class MessagesApp {
         
         conn.on('close', () => {
             this.handleDisconnect(peerId);
+        });
+        
+        conn.on('error', (err) => {
+            console.error('Connection error:', err);
+            alert('Failed to connect. Make sure the ID is correct and the user is online!');
         });
     }
     
@@ -414,17 +506,24 @@ class MessagesApp {
             sender: 'me'
         };
         
-        // Display locally
+        // Store and display locally
+        if (!this.activeConversation.messages) {
+            this.activeConversation.messages = [];
+        }
+        this.activeConversation.messages.push(message);
         this.displayMessage(message);
         
         // Send to peer
         const conn = this.connections[this.activeConversation.id];
-        if (conn) {
+        if (conn && conn.open) {
             conn.send({
                 type: 'message',
                 text: messageText,
                 time: message.time
             });
+        } else {
+            alert('Connection lost. Reconnecting...');
+            this.connectToPeer(this.activeConversation.id);
         }
         
         // Clear input
@@ -475,7 +574,7 @@ class MessagesApp {
         if (!this.activeConversation) return;
         
         const conn = this.connections[this.activeConversation.id];
-        if (conn) {
+        if (conn && conn.open) {
             conn.send({
                 type: 'typing',
                 isTyping: isTyping
@@ -494,17 +593,23 @@ class MessagesApp {
     
     updateOnlineUsersList() {
         const listDiv = this.window.querySelector('#onlineUsersList');
+        const countSpan = this.window.querySelector('#onlineCount');
+        
         if (listDiv) {
             listDiv.innerHTML = this.renderOnlineUsers();
         }
+        
+        if (countSpan) {
+            const onlineCount = this.onlineUsers.filter(u => !u.isMe).length;
+            countSpan.textContent = onlineCount;
+        }
     }
     
-    updateChatHeader() {
-        if (this.activeConversation) {
-            const header = this.window.querySelector('.chat-header-status');
-            if (header) {
-                header.innerHTML = this.activeConversation.online ? '🟢 Online' : '⚪ Offline';
-            }
+    updateChatArea() {
+        const chatArea = this.window.querySelector('#chatArea');
+        if (chatArea) {
+            chatArea.innerHTML = this.renderChatArea();
+            this.setupEventListeners();
         }
     }
     
@@ -514,15 +619,17 @@ class MessagesApp {
         this.bringToFront();
         
         // Update the ID display
-        const idDisplay = this.window.querySelector('.connect-section span');
-        if (idDisplay && this.myPeerId) {
-            idDisplay.textContent = this.myPeerId;
-        }
+        this.updatePeerIdDisplay();
         
         return true;
     }
     
     close() {
+        // Close all connections
+        Object.values(this.connections).forEach(conn => {
+            if (conn.open) conn.close();
+        });
+        
         this.window.style.display = 'none';
         this.isOpen = false;
     }
@@ -599,4 +706,4 @@ class MessagesApp {
 window.addEventListener('DOMContentLoaded', () => {
     console.log('💬 Initializing P2P Messages App...');
     window.MessagesApp = new MessagesApp();
-}); 
+});
