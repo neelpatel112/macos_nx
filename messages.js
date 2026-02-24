@@ -1,94 +1,122 @@
-// messages.js - macOS Style Messages App (Fully Functional Demo)
+// messages.js - Real P2P Chat using WebRTC
 class MessagesApp {
     constructor() {
         this.window = null;
         this.isOpen = false;
         this.activeConversation = null;
-        this.typingTimeout = null;
+        this.peer = null;
+        this.connections = {};
+        this.myPeerId = null;
+        this.username = 'User' + Math.floor(Math.random() * 1000);
+        this.onlineUsers = [];
         this.messageCounter = 0;
         
-        // Demo conversations
-        this.conversations = [
-            {
-                id: 1,
-                name: "John Doe",
-                avatar: "JD",
-                online: true,
-                lastMessage: "Hey, how's the macOS project going?",
-                time: "10:30 AM",
-                unread: 2,
-                messages: [
-                    { id: 1, text: "Hey! How's the macOS project going?", sender: "them", time: "10:30 AM" },
-                    { id: 2, text: "It's going great! Just added a messages app 😎", sender: "me", time: "10:31 AM" },
-                    { id: 3, text: "No way! That's awesome. Can we chat here?", sender: "them", time: "10:31 AM" },
-                    { id: 4, text: "Yeah bro, type something and I'll reply!", sender: "me", time: "10:32 AM" }
-                ]
-            },
-            {
-                id: 2,
-                name: "Sarah Smith",
-                avatar: "SS",
-                online: false,
-                lastMessage: "When will the UI be ready?",
-                time: "Yesterday",
-                unread: 0,
-                messages: [
-                    { id: 1, text: "Love the new design!", sender: "them", time: "Yesterday" },
-                    { id: 2, text: "Thanks! When will the UI be ready?", sender: "them", time: "Yesterday" },
-                    { id: 3, text: "Almost done! Just polishing some details", sender: "me", time: "Yesterday" }
-                ]
-            },
-            {
-                id: 3,
-                name: "Mike Johnson",
-                avatar: "MJ",
-                online: true,
-                lastMessage: "Check out this bug I found",
-                time: "2:15 PM",
-                unread: 1,
-                messages: [
-                    { id: 1, text: "Bro, check out this bug I found", sender: "them", time: "2:15 PM" },
-                    { id: 2, text: "What bug? Where?", sender: "me", time: "2:16 PM" },
-                    { id: 3, text: "The windows aren't draggable properly", sender: "them", time: "2:16 PM" }
-                ]
-            },
-            {
-                id: 4,
-                name: "Alex Chen",
-                avatar: "AC",
-                online: false,
-                lastMessage: "Can you review my PR?",
-                time: "Yesterday",
-                unread: 0,
-                messages: [
-                    { id: 1, text: "Hey! Can you review my PR?", sender: "them", time: "Yesterday" },
-                    { id: 2, text: "Sure, send it over!", sender: "me", time: "Yesterday" },
-                    { id: 3, text: "Just created it. Let me know what you think", sender: "them", time: "Yesterday" }
-                ]
-            }
-        ];
-        
-        // Demo responses
-        this.demoResponses = [
-            "Nice! 😎",
-            "LOL that's funny",
-            "how tf did you find me?",
-            "This macOS emulator is insane!",
-            "Can't believe this works on phone too",
-            "Bro you're a legend",
-            "When's the next feature coming?",
-            "🔥🔥🔥",
-            "Send memes pls",
-            "404: Brain not found"
-        ];
-        
+        // Load PeerJS library
+        this.loadPeerJS();
         this.init();
+    }
+    
+    loadPeerJS() {
+        // Check if PeerJS is already loaded
+        if (window.Peer) {
+            this.initializePeer();
+            return;
+        }
+        
+        // Load PeerJS from CDN
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js';
+        script.onload = () => this.initializePeer();
+        document.head.appendChild(script);
+    }
+    
+    initializePeer() {
+        // Generate random peer ID
+        this.myPeerId = 'user-' + Math.random().toString(36).substr(2, 9);
+        
+        // Create peer connection
+        this.peer = new Peer(this.myPeerId, {
+            debug: 2
+        });
+        
+        this.peer.on('open', (id) => {
+            console.log('✅ Connected to P2P network with ID:', id);
+            this.myPeerId = id;
+            this.addSelfToOnlineUsers();
+        });
+        
+        this.peer.on('connection', (conn) => {
+            console.log('📞 Incoming connection from:', conn.peer);
+            
+            conn.on('open', () => {
+                this.handleNewConnection(conn);
+            });
+            
+            conn.on('data', (data) => {
+                this.handleIncomingData(conn.peer, data);
+            });
+            
+            conn.on('close', () => {
+                this.handleDisconnect(conn.peer);
+            });
+        });
+        
+        this.peer.on('error', (err) => {
+            console.error('Peer error:', err);
+        });
+    }
+    
+    addSelfToOnlineUsers() {
+        this.onlineUsers.push({
+            id: this.myPeerId,
+            name: this.username + ' (You)',
+            isMe: true,
+            online: true
+        });
+    }
+    
+    handleNewConnection(conn) {
+        this.connections[conn.peer] = conn;
+        
+        // Add to online users
+        const existingUser = this.onlineUsers.find(u => u.id === conn.peer);
+        if (!existingUser) {
+            this.onlineUsers.push({
+                id: conn.peer,
+                name: 'User-' + conn.peer.substr(0, 4),
+                online: true
+            });
+        }
+        
+        this.updateOnlineUsersList();
+    }
+    
+    handleIncomingData(peerId, data) {
+        if (data.type === 'message') {
+            this.receiveMessage(peerId, data);
+        } else if (data.type === 'typing') {
+            this.showTypingIndicator(peerId, data.isTyping);
+        }
+    }
+    
+    handleDisconnect(peerId) {
+        // Remove from online users
+        this.onlineUsers = this.onlineUsers.filter(u => u.id !== peerId);
+        delete this.connections[peerId];
+        
+        // If this was active conversation, clear it
+        if (this.activeConversation && this.activeConversation.id === peerId) {
+            this.activeConversation.online = false;
+        }
+        
+        this.updateOnlineUsersList();
+        this.updateChatHeader();
     }
     
     init() {
         this.createWindow();
         this.setupEventListeners();
-        console.log('💬 Messages App initialized');
+        console.log('💬 P2P Messages App initialized');
     }
     
     createWindow() {
@@ -121,21 +149,33 @@ class MessagesApp {
                 </div>
                 <div class="window-title">
                     <i class="fas fa-comment" style="margin-right: 8px; color: #0a84ff;"></i>
-                    Messages
+                    Messages (P2P)
                 </div>
             </div>
             
             <div class="messages-container">
                 <div class="messages-sidebar">
                     <div class="messages-search">
-                        <input type="text" placeholder="Search conversations..." id="messageSearch">
+                        <input type="text" placeholder="Your ID: ${this.myPeerId}" readonly style="background: rgba(0,0,0,0.5);">
                     </div>
-                    <div class="conversations-list" id="conversationsList">
-                        ${this.renderConversations()}
+                    <div class="connect-section" style="padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                            <input type="text" id="peerIdInput" placeholder="Enter friend's ID..." style="flex:1; padding: 8px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: white;">
+                            <button id="connectBtn" style="padding: 8px 16px; background: #0a84ff; border: none; border-radius: 6px; color: white; cursor: pointer;">
+                                <i class="fas fa-link"></i>
+                            </button>
+                        </div>
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.5); text-align: center;">
+                            Share your ID: <span style="color: #0a84ff;">${this.myPeerId || 'loading...'}</span>
+                        </div>
                     </div>
-                    <div class="demo-banner">
-                        <i class="fas fa-info-circle"></i>
-                        <span>Demo Mode: Chat with yourself!</span>
+                    
+                    <div class="online-header" style="padding: 12px; font-size: 13px; color: rgba(255,255,255,0.7); border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <i class="fas fa-circle" style="color: #30d158; font-size: 10px;"></i> Online Users
+                    </div>
+                    
+                    <div class="conversations-list" id="onlineUsersList">
+                        ${this.renderOnlineUsers()}
                     </div>
                 </div>
                 
@@ -155,23 +195,31 @@ class MessagesApp {
         this.makeDraggable();
     }
     
-    renderConversations() {
-        return this.conversations.map(conv => `
-            <div class="conversation-item ${this.activeConversation?.id === conv.id ? 'active' : ''}" data-conv-id="${conv.id}">
+    renderOnlineUsers() {
+        if (this.onlineUsers.length === 0) {
+            return `
+                <div style="padding: 20px; text-align: center; color: rgba(255,255,255,0.3);">
+                    <i class="fas fa-user-slash" style="font-size: 24px; margin-bottom: 8px;"></i>
+                    <div>No one online yet</div>
+                    <div style="font-size: 11px; margin-top: 8px;">Share your ID to connect!</div>
+                </div>
+            `;
+        }
+        
+        return this.onlineUsers.map(user => `
+            <div class="conversation-item ${this.activeConversation?.id === user.id ? 'active' : ''}" data-user-id="${user.id}">
                 <div class="conversation-avatar">
-                    ${conv.avatar}
-                    ${conv.online ? '<span class="online-indicator"></span>' : ''}
+                    ${user.name.charAt(0).toUpperCase()}
+                    <span class="online-indicator" style="background: #30d158;"></span>
                 </div>
                 <div class="conversation-info">
                     <div class="conversation-name">
-                        <span>${conv.name}</span>
-                        <span class="conversation-time">${conv.time}</span>
+                        <span>${user.name}</span>
                     </div>
                     <div class="conversation-lastmsg">
-                        ${conv.lastMessage}
+                        ${user.isMe ? '(You)' : 'Click to chat'}
                     </div>
                 </div>
-                ${conv.unread > 0 ? `<span class="unread-badge">${conv.unread}</span>` : ''}
             </div>
         `).join('');
     }
@@ -181,32 +229,35 @@ class MessagesApp {
             return `
                 <div class="no-conversation">
                     <i class="fas fa-comment-dots"></i>
-                    <span>Select a conversation to start chatting</span>
+                    <span>Select a user to start P2P chat</span>
+                    <div style="font-size: 12px; margin-top: 12px; color: rgba(255,255,255,0.3);">
+                        Messages are temporary and disappear when you close
+                    </div>
                 </div>
             `;
         }
         
-        const conv = this.activeConversation;
+        const user = this.activeConversation;
         return `
             <div class="chat-header">
-                <div class="chat-header-avatar">${conv.avatar}</div>
+                <div class="chat-header-avatar">${user.name.charAt(0).toUpperCase()}</div>
                 <div class="chat-header-info">
-                    <h3>${conv.name}</h3>
+                    <h3>${user.name}</h3>
                     <div class="chat-header-status">
-                        ${conv.online ? '🟢 Online' : '⚪ Offline'}
+                        🟢 Online (P2P Connected)
                     </div>
                 </div>
             </div>
             
             <div class="chat-messages" id="chatMessages">
-                ${conv.messages.map(msg => this.renderMessage(msg)).join('')}
+                ${this.renderConversationHistory()}
             </div>
             
             <div class="typing-indicator" id="typingIndicator" style="display: none;">
                 <div class="typing-dot"></div>
                 <div class="typing-dot"></div>
                 <div class="typing-dot"></div>
-                <span style="margin-left: 8px; font-size: 12px; color: rgba(255,255,255,0.5);">${conv.name} is typing...</span>
+                <span style="margin-left: 8px; font-size: 12px; color: rgba(255,255,255,0.5);">${user.name} is typing...</span>
             </div>
             
             <div class="chat-input-area">
@@ -218,11 +269,20 @@ class MessagesApp {
         `;
     }
     
+    renderConversationHistory() {
+        if (!this.activeConversation.messages) {
+            this.activeConversation.messages = [];
+            return '<div style="text-align: center; color: rgba(255,255,255,0.2); padding: 20px;">No messages yet. Say hi! 👋</div>';
+        }
+        
+        return this.activeConversation.messages.map(msg => this.renderMessage(msg)).join('');
+    }
+    
     renderMessage(msg) {
         const isMe = msg.sender === 'me';
         return `
             <div class="message ${isMe ? 'outgoing' : 'incoming'}">
-                ${!isMe ? `<div class="message-avatar">${this.activeConversation.avatar}</div>` : ''}
+                ${!isMe ? `<div class="message-avatar">${this.activeConversation.name.charAt(0).toUpperCase()}</div>` : ''}
                 <div class="message-bubble">
                     <div class="message-text">${msg.text}</div>
                     <div class="message-time">${msg.time}</div>
@@ -232,30 +292,39 @@ class MessagesApp {
     }
     
     setupEventListeners() {
-        // Conversation click handler
         setTimeout(() => {
-            const conversations = this.window.querySelectorAll('.conversation-item');
-            conversations.forEach(conv => {
-                conv.addEventListener('click', () => {
-                    const convId = parseInt(conv.dataset.convId);
-                    this.switchConversation(convId);
+            // Connect button
+            const connectBtn = this.window.querySelector('#connectBtn');
+            const peerIdInput = this.window.querySelector('#peerIdInput');
+            
+            if (connectBtn && peerIdInput) {
+                connectBtn.addEventListener('click', () => {
+                    const targetId = peerIdInput.value.trim();
+                    if (targetId) {
+                        this.connectToPeer(targetId);
+                    }
+                });
+            }
+            
+            // Online users click
+            const userItems = this.window.querySelectorAll('.conversation-item');
+            userItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const userId = item.dataset.userId;
+                    if (userId && userId !== this.myPeerId) {
+                        this.selectUser(userId);
+                    }
                 });
             });
-            
-            // Search functionality
-            const searchInput = this.window.querySelector('#messageSearch');
-            if (searchInput) {
-                searchInput.addEventListener('input', (e) => this.searchConversations(e.target.value));
-            }
             
             // Message input
             const messageInput = this.window.querySelector('#messageInput');
             const sendBtn = this.window.querySelector('#sendMessageBtn');
             
-            if (messageInput && sendBtn) {
+            if (messageInput && sendBtn && this.activeConversation) {
                 messageInput.addEventListener('input', () => {
                     sendBtn.disabled = !messageInput.value.trim();
-                    this.simulateTyping();
+                    this.sendTypingStatus(true);
                 });
                 
                 messageInput.addEventListener('keypress', (e) => {
@@ -269,52 +338,66 @@ class MessagesApp {
         }, 100);
     }
     
-    switchConversation(convId) {
-        this.activeConversation = this.conversations.find(c => c.id === convId);
-        
-        // Mark as read
-        if (this.activeConversation) {
-            this.activeConversation.unread = 0;
+    connectToPeer(peerId) {
+        if (!this.peer || peerId === this.myPeerId) {
+            alert("Can't connect to yourself!");
+            return;
         }
         
-        // Re-render chat area
-        const chatArea = this.window.querySelector('#chatArea');
-        if (chatArea) {
-            chatArea.innerHTML = this.renderChatArea();
-            // Scroll to bottom
-            setTimeout(() => {
-                const messagesDiv = this.window.querySelector('#chatMessages');
-                if (messagesDiv) messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }, 100);
-        }
+        console.log('🔌 Connecting to:', peerId);
+        const conn = this.peer.connect(peerId);
         
-        // Re-setup listeners
-        this.setupEventListeners();
-    }
-    
-    searchConversations(query) {
-        const items = this.window.querySelectorAll('.conversation-item');
-        items.forEach(item => {
-            const name = item.querySelector('.conversation-name span').textContent.toLowerCase();
-            if (name.includes(query.toLowerCase())) {
-                item.style.display = 'flex';
-            } else {
-                item.style.display = 'none';
-            }
+        conn.on('open', () => {
+            console.log('✅ Connected to:', peerId);
+            this.connections[peerId] = conn;
+            
+            // Add to online users
+            this.onlineUsers.push({
+                id: peerId,
+                name: 'User-' + peerId.substr(0, 4),
+                online: true,
+                messages: []
+            });
+            
+            this.updateOnlineUsersList();
+            this.selectUser(peerId);
+        });
+        
+        conn.on('data', (data) => {
+            this.handleIncomingData(peerId, data);
+        });
+        
+        conn.on('close', () => {
+            this.handleDisconnect(peerId);
         });
     }
     
-    simulateTyping() {
-        if (!this.activeConversation || !this.activeConversation.online) return;
-        
-        const indicator = this.window.querySelector('#typingIndicator');
-        if (indicator) {
-            indicator.style.display = 'flex';
+    selectUser(userId) {
+        const user = this.onlineUsers.find(u => u.id === userId);
+        if (user) {
+            this.activeConversation = user;
+            if (!user.messages) user.messages = [];
             
-            clearTimeout(this.typingTimeout);
-            this.typingTimeout = setTimeout(() => {
-                indicator.style.display = 'none';
-            }, 2000);
+            // Update chat area
+            const chatArea = this.window.querySelector('#chatArea');
+            if (chatArea) {
+                chatArea.innerHTML = this.renderChatArea();
+                this.setupEventListeners();
+                
+                // Scroll to bottom
+                setTimeout(() => {
+                    const messagesDiv = this.window.querySelector('#chatMessages');
+                    if (messagesDiv) messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                }, 100);
+            }
+            
+            // Update active state in user list
+            this.window.querySelectorAll('.conversation-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.userId === userId) {
+                    item.classList.add('active');
+                }
+            });
         }
     }
     
@@ -324,100 +407,118 @@ class MessagesApp {
         
         if (!messageText || !this.activeConversation) return;
         
-        // Add message
-        const newMessage = {
-            id: this.messageCounter++,
+        const message = {
+            type: 'message',
             text: messageText,
-            sender: 'me',
-            time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+            time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+            sender: 'me'
         };
         
-        this.activeConversation.messages.push(newMessage);
-        this.activeConversation.lastMessage = messageText;
-        this.activeConversation.time = 'Just now';
+        // Display locally
+        this.displayMessage(message);
         
-        // Update last message in sidebar
-        const convItem = this.window.querySelector(`[data-conv-id="${this.activeConversation.id}"] .conversation-lastmsg`);
-        if (convItem) {
-            convItem.textContent = messageText;
-            const timeSpan = this.window.querySelector(`[data-conv-id="${this.activeConversation.id}"] .conversation-time`);
-            if (timeSpan) timeSpan.textContent = 'Just now';
+        // Send to peer
+        const conn = this.connections[this.activeConversation.id];
+        if (conn) {
+            conn.send({
+                type: 'message',
+                text: messageText,
+                time: message.time
+            });
         }
         
-        // Add message to chat
+        // Clear input
+        input.value = '';
+        this.window.querySelector('#sendMessageBtn').disabled = true;
+        this.sendTypingStatus(false);
+    }
+    
+    receiveMessage(peerId, data) {
+        const user = this.onlineUsers.find(u => u.id === peerId);
+        if (user) {
+            const message = {
+                type: 'message',
+                text: data.text,
+                time: data.time || new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+                sender: 'them'
+            };
+            
+            if (!user.messages) user.messages = [];
+            user.messages.push(message);
+            
+            // If this is the active conversation, display it
+            if (this.activeConversation && this.activeConversation.id === peerId) {
+                this.displayMessage(message);
+            }
+        }
+    }
+    
+    displayMessage(message) {
         const messagesDiv = this.window.querySelector('#chatMessages');
+        if (!messagesDiv) return;
+        
         const messageEl = document.createElement('div');
-        messageEl.className = 'message outgoing';
+        messageEl.className = `message ${message.sender === 'me' ? 'outgoing' : 'incoming'}`;
         messageEl.innerHTML = `
+            ${message.sender !== 'me' ? `<div class="message-avatar">${this.activeConversation.name.charAt(0).toUpperCase()}</div>` : ''}
             <div class="message-bubble">
-                <div class="message-text">${messageText}</div>
-                <div class="message-time">${newMessage.time}</div>
+                <div class="message-text">${message.text}</div>
+                <div class="message-time">${message.time}</div>
             </div>
         `;
         
         messagesDiv.appendChild(messageEl);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        
-        // Clear input
-        input.value = '';
-        this.window.querySelector('#sendMessageBtn').disabled = true;
-        
-        // Hide typing indicator
-        const indicator = this.window.querySelector('#typingIndicator');
-        if (indicator) indicator.style.display = 'none';
-        
-        // Simulate reply after delay
-        this.simulateReply();
     }
     
-    simulateReply() {
-        if (!this.activeConversation || !this.activeConversation.online) return;
+    sendTypingStatus(isTyping) {
+        if (!this.activeConversation) return;
         
-        setTimeout(() => {
-            // Show typing indicator
+        const conn = this.connections[this.activeConversation.id];
+        if (conn) {
+            conn.send({
+                type: 'typing',
+                isTyping: isTyping
+            });
+        }
+    }
+    
+    showTypingIndicator(peerId, isTyping) {
+        if (this.activeConversation && this.activeConversation.id === peerId) {
             const indicator = this.window.querySelector('#typingIndicator');
-            if (indicator) indicator.style.display = 'flex';
-            
-            setTimeout(() => {
-                if (!this.activeConversation) return;
-                
-                // Hide typing indicator
-                if (indicator) indicator.style.display = 'none';
-                
-                // Random reply
-                const randomResponse = this.demoResponses[Math.floor(Math.random() * this.demoResponses.length)];
-                const replyMessage = {
-                    id: this.messageCounter++,
-                    text: randomResponse,
-                    sender: 'them',
-                    time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-                };
-                
-                this.activeConversation.messages.push(replyMessage);
-                this.activeConversation.lastMessage = randomResponse;
-                
-                // Add message to chat
-                const messagesDiv = this.window.querySelector('#chatMessages');
-                const messageEl = document.createElement('div');
-                messageEl.className = 'message incoming';
-                messageEl.innerHTML = `
-                    <div class="message-avatar">${this.activeConversation.avatar}</div>
-                    <div class="message-bubble">
-                        <div class="message-text">${randomResponse}</div>
-                        <div class="message-time">${replyMessage.time}</div>
-                    </div>
-                `;
-                
-                messagesDiv.appendChild(messageEl);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }, 2000);
-        }, 1000);
+            if (indicator) {
+                indicator.style.display = isTyping ? 'flex' : 'none';
+            }
+        }
+    }
+    
+    updateOnlineUsersList() {
+        const listDiv = this.window.querySelector('#onlineUsersList');
+        if (listDiv) {
+            listDiv.innerHTML = this.renderOnlineUsers();
+        }
+    }
+    
+    updateChatHeader() {
+        if (this.activeConversation) {
+            const header = this.window.querySelector('.chat-header-status');
+            if (header) {
+                header.innerHTML = this.activeConversation.online ? '🟢 Online' : '⚪ Offline';
+            }
+        }
     }
     
     open() {
         this.window.style.display = 'flex';
         this.isOpen = true;
         this.bringToFront();
+        
+        // Update the ID display
+        const idDisplay = this.window.querySelector('.connect-section span');
+        if (idDisplay && this.myPeerId) {
+            idDisplay.textContent = this.myPeerId;
+        }
+        
         return true;
     }
     
@@ -496,6 +597,6 @@ class MessagesApp {
 
 // Initialize Messages App
 window.addEventListener('DOMContentLoaded', () => {
-    console.log('💬 Initializing Messages App...');
+    console.log('💬 Initializing P2P Messages App...');
     window.MessagesApp = new MessagesApp();
 }); 
