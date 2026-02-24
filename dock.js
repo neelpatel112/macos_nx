@@ -258,6 +258,25 @@ class MacOSDock {
             return;
         }
 
+// Messages App
+if (appId === 'messages') {
+    console.log("💬 Opening Messages...");
+    if (window.MessagesApp) {
+        if (!window.MessagesApp.isOpen) {
+            window.MessagesApp.open();
+        } else {
+            window.MessagesApp.bringToFront();
+        }
+    } else {
+        console.error("❌ MessagesApp not found!");
+        if (typeof MessagesApp !== 'undefined') {
+            window.MessagesApp = new MessagesApp();
+            setTimeout(() => window.MessagesApp.open(), 100);
+        }
+    }
+    return;
+}
+
         // Calendar App
 if (appId === 'calendar') {
     console.log("📅 Opening Calendar...");
