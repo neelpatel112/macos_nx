@@ -725,3 +725,180 @@ input:checked + .slider:before {
     text-transform: uppercase;
     letter-spacing: 0.5px;
 } 
+/* Context Menu Styles */
+.context-menu {
+    position: fixed;
+    background: rgba(40, 40, 40, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 8px;
+    padding: 6px 0;
+    min-width: 220px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: menuFadeIn 0.1s ease-out;
+    z-index: 10000;
+}
+
+.context-menu .menu-item {
+    padding: 8px 24px 8px 32px;
+    font-size: 14px;
+    color: #fff;
+    cursor: default;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    white-space: nowrap;
+}
+
+.context-menu .menu-item i {
+    width: 16px;
+    font-size: 14px;
+    color: #aaa;
+}
+
+.context-menu .menu-item:hover {
+    background: #007AFF;
+    color: white;
+}
+
+.context-menu .menu-item:hover i {
+    color: white;
+}
+
+.context-menu .menu-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 6px 0;
+}
+
+.context-menu .submenu-indicator {
+    margin-left: auto;
+    font-size: 10px;
+    color: #888;
+}
+
+.context-menu .has-submenu:hover .submenu-indicator {
+    color: white;
+}
+
+/* Submenu */
+.submenu {
+    display: none;
+    position: fixed;
+    background: rgba(40, 40, 40, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 8px;
+    padding: 6px 0;
+    min-width: 200px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 10001;
+}
+
+.submenu.context-submenu {
+    display: block;
+    animation: menuFadeIn 0.1s ease-out;
+}
+
+/* Cloud Login Modal */
+.cloud-login-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.cloud-login-content {
+    background: rgba(40, 40, 40, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 12px;
+    padding: 24px;
+    width: 320px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.cloud-login-content h2 {
+    color: white;
+    font-size: 18px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cloud-login-content h2 i {
+    color: #007AFF;
+}
+
+.cloud-login-content input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: white;
+    font-size: 14px;
+}
+
+.cloud-login-content input:focus {
+    outline: none;
+    border-color: #007AFF;
+}
+
+.cloud-login-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.cloud-login-buttons button {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#cloud-login-btn, #cloud-register-btn {
+    background: #007AFF;
+    color: white;
+}
+
+#cloud-login-btn:hover, #cloud-register-btn:hover {
+    background: #0051D5;
+}
+
+#cloud-close-btn, #cloud-back-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+#cloud-close-btn:hover, #cloud-back-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+@keyframes menuFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+} 
