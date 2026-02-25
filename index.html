@@ -15,6 +15,19 @@
      <link rel="stylesheet" href="messages.css">
 </head>
 <body>
+<div id="lock-screen">
+    <div class="ls-clock-container">
+        <div id="ls-date">Thursday, May 23</div>
+        <div id="ls-time">8:30</div>
+    </div>
+
+    <div class="ls-user-section">
+        <img src="icons/user-avatar.png" class="ls-avatar" alt="User">
+        <div class="ls-username">Anya Zhukova</div>
+        <input type="password" class="ls-login-input" placeholder="Enter Password" id="password-input">
+        <div class="ls-hint">Touch ID or Enter Password</div>
+    </div>
+</div>
     <!-- Desktop Background -->
     <div class="desktop">
         <div class="icon" style="top: 100px; left: 100px;">
@@ -31,16 +44,21 @@
         </div>
     </div>
 
-<!-- Update the menu bar section in your index.html -->
-<div class="menu-bar">
-    <div class="apple-menu">
-        <i class="fab fa-apple"></i>
+    <!-- Menu Bar -->
+    <div class="menu-bar">
+        <div class="apple-menu">
+            <i class="fab fa-apple"></i>
+        </div>
+        <div class="menu-item">Finder</div>
+        <div class="menu-item">File</div>
+        <div class="menu-item">Edit</div>
+        <div class="menu-item">View</div>
+        <div class="menu-item">Window</div>
+        <div class="menu-item">Help</div>
+        <div class="status-area">
+            <span id="time">10:00 AM</span>
+        </div>
     </div>
-    <!-- Menu items will be dynamically added -->
-    <div class="status-area">
-        <span id="time">10:00 AM</span>
-    </div>
-</div>
 
     <!-- Dock -->
     <div class="dock-container" id="dockContainer"></div>
@@ -59,5 +77,6 @@
 <script src="maps.js"></script>  
 <script src="menubar.js"></script>
 <script src="messages.js"></script>
+<script src="lockscreen.js"></script>
 </body>
 </html>
