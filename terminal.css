@@ -1,0 +1,195 @@
+/* Terminal App Styles */
+.terminal-window {
+    background-color: #1e1e1e !important;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.terminal-window .window-header {
+    background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+    border-bottom: 1px solid #1a1a1a;
+}
+
+.terminal-window .window-title {
+    color: #ddd;
+}
+
+.terminal-content {
+    background-color: #1e1e1e;
+    color: #f0f0f0;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    padding: 15px;
+    height: calc(100% - 50px);
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.5;
+}
+
+.terminal-line {
+    margin: 2px 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.terminal-prompt {
+    color: #6c6;
+    margin-right: 10px;
+    white-space: nowrap;
+}
+
+.terminal-prompt-root {
+    color: #f66;
+}
+
+.terminal-prompt-user {
+    color: #6c6;
+}
+
+.terminal-input-line {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.terminal-input {
+    background: transparent;
+    border: none;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+    flex: 1;
+    outline: none;
+    caret-color: #fff;
+}
+
+.terminal-cursor {
+    display: inline-block;
+    width: 8px;
+    height: 18px;
+    background-color: #fff;
+    margin-left: 2px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Color themes */
+.terminal-theme-green {
+    background-color: #001100 !important;
+    color: #00ff00 !important;
+}
+.terminal-theme-green .terminal-prompt { color: #0f0; }
+.terminal-theme-green .terminal-input { color: #0f0; }
+
+.terminal-theme-amber {
+    background-color: #110800 !important;
+    color: #ffb000 !important;
+}
+.terminal-theme-amber .terminal-prompt { color: #ffb000; }
+.terminal-theme-amber .terminal-input { color: #ffb000; }
+
+.terminal-theme-white {
+    background-color: #1e1e1e !important;
+    color: #fff !important;
+}
+.terminal-theme-white .terminal-prompt { color: #6c6; }
+
+.terminal-theme-hacker {
+    background-color: #000 !important;
+    color: #0f0 !important;
+    text-shadow: 0 0 5px #0f0;
+}
+.terminal-theme-hacker .terminal-prompt { color: #0f0; }
+
+.terminal-theme-matrix {
+    background-color: #000 !important;
+    color: #0f0 !important;
+    font-family: 'Courier New', monospace;
+    animation: matrix-rain 20s linear infinite;
+}
+
+@keyframes matrix-rain {
+    0% { background-position: 0 0; }
+    100% { background-position: 0 100px; }
+}
+
+/* Command output styling */
+.command-output {
+    margin: 5px 0 10px 0;
+    padding-left: 10px;
+    border-left: 2px solid #444;
+}
+
+.error-text {
+    color: #f66;
+}
+
+.success-text {
+    color: #6c6;
+}
+
+.warning-text {
+    color: #fa0;
+}
+
+.ascii-art {
+    font-family: 'Monaco', monospace;
+    white-space: pre;
+    color: #0ff;
+    line-height: 1.2;
+}
+
+/* File listing */
+.file-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 5px;
+}
+
+.file-item {
+    padding: 2px 5px;
+}
+
+.file-item.directory {
+    color: #6cf;
+    font-weight: bold;
+}
+
+.file-item.executable {
+    color: #6c6;
+}
+
+.file-item.hidden {
+    opacity: 0.6;
+}
+
+/* Process table */
+.process-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.process-table th {
+    text-align: left;
+    border-bottom: 1px solid #444;
+    padding: 5px;
+}
+
+.process-table td {
+    padding: 3px 5px;
+}
+
+/* Color codes for terminal */
+.color-red { color: #f66; }
+.color-green { color: #6c6; }
+.color-blue { color: #6cf; }
+.color-yellow { color: #ff6; }
+.color-magenta { color: #f6f; }
+.color-cyan { color: #6ff; }
+.color-white { color: #fff; } 

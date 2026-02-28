@@ -32,6 +32,7 @@ class MacOSDock {
             { id: 'safari', name: 'Safari', icon: 'icons/safari.png' },
             { id: 'photos', name: 'Photos', icon: 'icons/photos.png' },
             { id: 'mail', name: 'Mail', icon: 'icons/mail.png' },
+            { id: 'terminal', name: 'Terminal', icon: 'icons/terminal.png' },
             { id: 'messages', name: 'Messages', icon: 'icons/messages.png' },
             { id: 'music', name: 'Music', icon: 'icons/music.png' },
             { id: 'calendar', name: 'Calendar', icon: 'icons/calendar.png' },
@@ -296,6 +297,17 @@ if (appId === 'calendar') {
     return;
 }
 
+// Terminal App
+if (appId === 'terminal') {
+    console.log("💻 Opening Terminal...");
+    if (window.TerminalApp) {
+        if (!window.TerminalApp.isOpen) {
+            window.TerminalApp.open();
+        } else {
+            window.TerminalApp.bringToFront();
+        }
+    }
+}
 
 // GitHub App - FIX THIS SECTION
 if (appId === 'github') {
