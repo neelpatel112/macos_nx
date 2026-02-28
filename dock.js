@@ -338,12 +338,25 @@ if (appId === 'maps') {
     return;
 }
 
-
-        // Safari (placeholder)
-        if (appId === 'safari') {
-            alert('Safari would open here!');
-            return;
+// Safari App
+if (appId === 'safari') {
+    console.log("🌐 Opening Safari...");
+    if (window.SafariApp) {
+        if (!window.SafariApp.isOpen) {
+            window.SafariApp.open();
+        } else {
+            window.SafariApp.bringToFront();
         }
+    } else {
+        console.error("❌ SafariApp not found!");
+        // Initialize Safari if it doesn't exist
+        setTimeout(() => {
+            if (window.SafariApp) {
+                window.SafariApp.open();
+            }
+        }, 100);
+    }
+}
         
         // Other apps (placeholder)
         if (['mail', 'messages', 'trash'].includes(appId)) {

@@ -1,0 +1,111 @@
+/* Safari Browser Specific Styles */
+.safari-window {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+}
+
+.safari-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  background: linear-gradient(to bottom, #f5f5f5, #e5e5e5);
+  border-bottom: 1px solid #b3b3b3;
+  gap: 8px;
+}
+
+.toolbar-button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 5px;
+  color: #333;
+  font-weight: bold;
+}
+
+.toolbar-button:hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.toolbar-button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.url-bar-container {
+  flex: 1;
+}
+
+#safari-url-input {
+  width: 100%;
+  padding: 6px 12px;
+  border: 1px solid #9aa0a6;
+  border-radius: 20px;
+  font-size: 14px;
+  outline: none;
+  background-color: white;
+}
+
+#safari-url-input:focus {
+  border-color: #007aff;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
+}
+
+.safari-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+/* Search Result Styling */
+.search-result {
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e4e4e4;
+}
+
+.search-result:last-child {
+  border-bottom: none;
+}
+
+.search-result-title {
+  font-size: 18px;
+  color: #1a0dab;
+  text-decoration: none;
+  cursor: pointer;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.search-result-title:hover {
+  text-decoration: underline;
+}
+
+.search-result-link {
+  font-size: 14px;
+  color: #006621;
+  margin-bottom: 5px;
+  word-break: break-all;
+}
+
+.search-result-snippet {
+  font-size: 14px;
+  color: #545454;
+  line-height: 1.5;
+}
+
+.welcome-message {
+  text-align: center;
+  margin-top: 50px;
+  color: #666;
+}
+
+.loading-indicator {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #666;
+} 
