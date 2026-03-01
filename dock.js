@@ -306,7 +306,14 @@ if (appId === 'terminal') {
         } else {
             window.TerminalApp.bringToFront();
         }
+    } else {
+        console.error("❌ TerminalApp not found!");
+        if (typeof TerminalApp !== 'undefined') {
+            window.TerminalApp = new TerminalApp();
+            setTimeout(() => window.TerminalApp.open(), 100);
+        }
     }
+    return; 
 }
 
 // GitHub App - FIX THIS SECTION
