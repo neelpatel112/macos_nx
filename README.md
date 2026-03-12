@@ -16,7 +16,7 @@ A fully functional macOS desktop environment built with vanilla HTML, CSS, and J
 - Draggable, resizable windows with smooth animations
 - Functional dock with app icons and hover effects
 - Dynamic wallpaper support
-- Window management (open, close, minimize, maximize)
+- Window management (open, close, minimize,maximize)
 
 ### 📁 Built-in Applications
 
